@@ -1,5 +1,11 @@
 using UnityEngine;
 
+// ──────────────────────────────────────────────
+// PlayerControll: 플레이어 이동 및 총알 발사 제어
+// - 총알 파워 단계(1~3)에 따라 여러 발 동시 발사 가능
+// - Inspector에서 각 단계별 총알 위치(Transform) 지정
+// - 초보자도 쉽게 이해할 수 있도록 상세 주석 포함
+// ──────────────────────────────────────────────
 public class PlayerControll : MonoBehaviour
 {
     // 플레이어 이동 속도 (Inspector에서 조절 가능)
@@ -18,8 +24,26 @@ public class PlayerControll : MonoBehaviour
     // 총알 프리팹 (Inspector에서 연결)
     public GameObject bulletPrefab;
 
-    // 총알이 나갈 위치 포인트 (Inspector에서 연결)
-    public Transform bulletPoint;
+
+
+    // ─── 총알 위치 및 프리팹 구조체 ─────────────────────────────
+    // Inspector에서 각 위치별로 어떤 총알 프리팹을 쓸지 직접 연결 가능
+    [System.Serializable]
+    public class BulletSpawnInfo
+    {
+        public Transform spawnPoint; // 총알이 나갈 위치
+        public GameObject bulletPrefab; // 사용할 총알 프리팹
+    }
+
+    // 각 파워 단계별로 여러 발사 정보 배열
+    public BulletSpawnInfo[] bulletInfosPower1; // 1단계
+    public BulletSpawnInfo[] bulletInfosPower2; // 2단계
+    public BulletSpawnInfo[] bulletInfosPower3; // 3단계
+
+    // 현재 총알 파워 단계 (1~3)
+    // Inspector에서 직접 변경하거나, 게임 내 파워업 아이템 등으로 변경 가능
+    [Range(1,3)]
+    public int bulletPower = 1;
 
     // 연사 간격(초). 값이 작을수록 더 빠르게 발사됨
     public float shotInterval = 0.12f;
@@ -117,27 +141,41 @@ public class PlayerControll : MonoBehaviour
     }
 
     // bulletPoint 위치에서 bulletPrefab을 생성하는 함수
+    // ──────────────────────────────────────────────
+    // Shoot: 파워 단계에 따라 여러 위치에서 총알 발사
+    // - 각 단계별로 Inspector에서 지정한 위치(Transform)에서 총알 생성
+    // - 각 총알은 개별적으로 충돌 판정 및 파괴 처리됨
+    // ──────────────────────────────────────────────
     void Shoot()
     {
-        // 프리팹 또는 포인트가 없으면 발사를 건너뜀
-        if (bulletPrefab == null || bulletPoint == null)
+        // 파워 단계에 맞는 배열 선택
+        BulletSpawnInfo[] infos = null;
+        switch (bulletPower)
         {
-            // 무엇이 빠졌는지 콘솔에 한 번만 출력해서 원인 파악을 쉽게 함
+            case 1: infos = bulletInfosPower1; break;
+            case 2: infos = bulletInfosPower2; break;
+            case 3: infos = bulletInfosPower3; break;
+        }
+
+        if (infos == null || infos.Length == 0)
+        {
             if (!hasShownShootWarning)
             {
-                Debug.LogWarning("Shoot failed: bulletPrefab 또는 bulletPoint가 비어 있습니다.");
+                Debug.LogWarning($"Shoot failed: bulletInfosPower{bulletPower}가 비어 있습니다.");
                 hasShownShootWarning = true;
             }
             return;
         }
 
-        // 템플릿 기반으로 총알 생성
-        GameObject spawnedBullet = Instantiate(bulletPrefab, bulletPoint.position, bulletPoint.rotation);
-
-        // 템플릿이 비활성 상태여도 생성된 총알은 활성화해서 발사되게 함
-        if (!spawnedBullet.activeSelf)
+        // 각 위치별로 지정된 프리팹을 사용해 총알 생성
+        foreach (BulletSpawnInfo info in infos)
         {
-            spawnedBullet.SetActive(true);
+            if (info == null || info.spawnPoint == null || info.bulletPrefab == null) continue;
+            GameObject spawnedBullet = Instantiate(info.bulletPrefab, info.spawnPoint.position, info.spawnPoint.rotation);
+            if (!spawnedBullet.activeSelf)
+            {
+                spawnedBullet.SetActive(true);
+            }
         }
     }
 
