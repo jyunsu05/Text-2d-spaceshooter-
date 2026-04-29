@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class bullet : MonoBehaviour
+public class Bullet : MonoBehaviour
 {
     // 총알 이동 속도 (Inspector에서 조절 가능)
     public float speed = 12f;

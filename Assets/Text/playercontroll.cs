@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class playercontroll : MonoBehaviour
+public class PlayerControll : MonoBehaviour
 {
     // 플레이어 이동 속도 (Inspector에서 조절 가능)
     public float speed = 5f;
