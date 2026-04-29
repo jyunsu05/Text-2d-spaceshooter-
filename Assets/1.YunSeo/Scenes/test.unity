@@ -310,7 +310,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6459729462266611640, guid: 4129670f2c80ae04bb35247b1fb87fe1, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -369,6 +369,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BackGround_2
       objectReference: {fileID: 0}
+    - target: {fileID: 8367389022543260355, guid: 1b2165af844492448901a751b2064293, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -425,6 +429,10 @@ PrefabInstance:
     - target: {fileID: 5901972015730241262, guid: 6ac99a690af2b2a4e83d73338fce4694, type: 3}
       propertyPath: m_Name
       value: BackGround_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5901972015730241262, guid: 6ac99a690af2b2a4e83d73338fce4694, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -543,6 +551,10 @@ PrefabInstance:
     - target: {fileID: 5412628441066369477, guid: c69d6eb4265bf11479a9ba09e6fe6803, type: 3}
       propertyPath: m_Name
       value: BackGround_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412628441066369477, guid: c69d6eb4265bf11479a9ba09e6fe6803, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
