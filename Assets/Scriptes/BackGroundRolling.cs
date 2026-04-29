@@ -3,7 +3,7 @@ using UnityEngine;
 // 배경 무한 스크롤 스크립트
 // 사용법: 이 스크립트를 배경 오브젝트 2개에 모두 붙이세요.
 //         배경 2개를 세로로 나란히 배치해두면 끊김 없이 무한 반복됩니다.
-public class BackgroundRolling : MonoBehaviour
+public class BackGroundRolling : MonoBehaviour
 {
     public float speed = 2f;        // 배경이 내려오는 속도 (Inspector에서 조절 가능)
 
