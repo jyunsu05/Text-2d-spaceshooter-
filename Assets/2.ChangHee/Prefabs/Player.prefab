@@ -138,6 +138,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::playercontroll
   speed: 5
+  bulletPrefab: {fileID: 6206190152786135884, guid: 4eebbd37f729af0429db1c44cf5ca99e, type: 3}
+  bulletPoint: {fileID: 2333087359830603176}
+  shotInterval: 0.12
 --- !u!95 &4821744394537200225
 Animator:
   serializedVersion: 7
