@@ -12,6 +12,9 @@ public class playercontroll : MonoBehaviour
     private float halfWidth;
     private float halfHeight;
 
+    // 애니메이션을 제어할 Animator 컴포넌트
+    private Animator animator;
+
     void Start()
     {
         // 메인 카메라를 가져옴
@@ -22,6 +25,9 @@ public class playercontroll : MonoBehaviour
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         halfWidth  = sr.bounds.extents.x; // 가로 절반 크기
         halfHeight = sr.bounds.extents.y; // 세로 절반 크기
+
+        // Animator 컴포넌트를 가져옴 (애니메이션 전환에 사용)
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -32,6 +38,25 @@ public class playercontroll : MonoBehaviour
         // Vertical   : 아래(-1) / 위(+1)
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveY = Input.GetAxisRaw("Vertical");
+
+        // ─── 애니메이션 상태 업데이트 ───────────────────────────
+        // moveX 값에 따라 애니메이션 전환
+        // State: 0=Idle, 1=Left, 2=Right
+        if (moveX < 0)
+        {
+            // 왼쪽 이동
+            animator.SetInteger("State", 1);
+        }
+        else if (moveX > 0)
+        {
+            // 오른쪽 이동
+            animator.SetInteger("State", 2);
+        }
+        else
+        {
+            // 입력 없음 (정지 상태)
+            animator.SetInteger("State", 0);
+        }
 
         // ─── 이동 방향 벡터 만들기 ───────────────────────────────
         // normalized : 대각선 이동 시 속도가 빨라지지 않도록 크기를 1로 맞춤
