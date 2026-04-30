@@ -102,9 +102,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6206190152786135884}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eab786bc93308074c9d87194bfdb873c, type: 3}
+  m_Script: {fileID: 11500000, guid: f63d1255a59c99e46a1c0c1f5147cbb3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::bullet
+  m_EditorClassIdentifier: Assembly-CSharp::Bullet
   speed: 12
   viewportMargin: 0.05
   damage: 1

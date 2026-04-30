@@ -115,9 +115,10 @@ public class Enemy : MonoBehaviour
             yield return new WaitForSeconds(firstShotDelay);
         }
 
+        float visibilityCheckInterval = Mathf.Max(0.05f, shotInterval);
         while (!IsInsideMainCameraView())
         {
-            yield return null;
+            yield return new WaitForSeconds(visibilityCheckInterval);
         }
 
         // EnemyPoint_1, EnemyPoint_2에서 각각 1발씩, 총 2발을 한 번만 발사
