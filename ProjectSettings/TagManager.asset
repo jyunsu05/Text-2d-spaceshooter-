@@ -7,9 +7,7 @@ TagManager:
   - Enemy
   - EnemyBullet
   - BackGround
-  - Item
-  - Skillboom
-  - playerBullet
+  - Bullet
   layers:
   - Default
   - TransparentFX
