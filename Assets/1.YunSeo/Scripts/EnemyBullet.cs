@@ -18,11 +18,10 @@ public class EnemyBullet : MonoBehaviour
     {
         mainCamera = Camera.main;
 
-        // 발사 순간 플레이어 위치를 기준으로 방향 고정
-        GameObject player = GameObject.FindWithTag("Player");
-        if (player != null)
+        Transform target = FindPlayer();
+        if (target != null)
         {
-            moveDirection = (player.transform.position - transform.position).normalized;
+            moveDirection = (target.position - transform.position).normalized;
         }
     }
 
@@ -49,5 +48,23 @@ public class EnemyBullet : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    private Transform FindPlayer()
+    {
+        GameObject player = GameObject.FindWithTag("Player");
+
+        if (player == null)
+        {
+            // 태그 미설정 프로젝트를 위한 폴백
+            player = GameObject.Find("Player");
+        }
+
+        if (player != null)
+        {
+            return player.transform;
+        }
+
+        return null;
     }
 }

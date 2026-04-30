@@ -29,7 +29,7 @@ public class Enemy : MonoBehaviour
 
         UpdateSprite();
 
-        canShoot = gameObject.name.Contains("Enemy_C");
+        canShoot = gameObject.name.StartsWith("Enemy_C");
 
         if (canShoot)
         {
@@ -40,12 +40,12 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
-        if (!canShoot || enemyBulletPrefab == null)
+        if (!canShoot || enemyBulletPrefab == null || enemyPoint1 == null || enemyPoint2 == null)
         {
             return;
         }
 
-        StartCoroutine(ShootLoop());
+        StartCoroutine(ShootOnce());
     }
 
     void Update()
@@ -108,20 +108,21 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private IEnumerator ShootLoop()
+    private IEnumerator ShootOnce()
     {
         if (firstShotDelay > 0f)
         {
             yield return new WaitForSeconds(firstShotDelay);
         }
 
-        while (true)
+        while (!IsInsideMainCameraView())
         {
-            ShootFromPoint(enemyPoint1);
-            ShootFromPoint(enemyPoint2);
-
-            yield return new WaitForSeconds(shotInterval);
+            yield return null;
         }
+
+        // EnemyPoint_1, EnemyPoint_2에서 각각 1발씩, 총 2발을 한 번만 발사
+        ShootFromPoint(enemyPoint1);
+        ShootFromPoint(enemyPoint2);
     }
 
     private void ShootFromPoint(Transform firePoint)
@@ -132,5 +133,19 @@ public class Enemy : MonoBehaviour
         }
 
         Instantiate(enemyBulletPrefab, firePoint.position, firePoint.rotation);
+    }
+
+    private bool IsInsideMainCameraView()
+    {
+        Camera cam = Camera.main;
+        if (cam == null)
+        {
+            return true;
+        }
+
+        Vector3 viewportPos = cam.WorldToViewportPoint(transform.position);
+        return viewportPos.z > 0f
+               && viewportPos.x >= 0f && viewportPos.x <= 1f
+               && viewportPos.y >= 0f && viewportPos.y <= 1f;
     }
 }
