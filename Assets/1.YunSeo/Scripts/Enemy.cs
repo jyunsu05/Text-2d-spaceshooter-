@@ -25,6 +25,7 @@ public class Enemy : MonoBehaviour
     private Coroutine hitFeedbackRoutine;
     private Sprite normalSprite;
     private Sprite hitSprite;
+    private bool isDead = false;
 
     void Awake()
     {
@@ -172,6 +173,12 @@ public class Enemy : MonoBehaviour
 
     private void Die()
     {
+        if (isDead)
+        {
+            return;
+        }
+
+        isDead = true;
         DropItem();
         Destroy(gameObject);
     }

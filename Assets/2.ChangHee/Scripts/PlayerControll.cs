@@ -5,6 +5,15 @@ using UnityEngine;
 /// </summary>
 public class PlayerControll : MonoBehaviour
 {
+    // UI/외부 스크립트에서 읽기 쉽게 제공하는 상태값
+    public int CurrentHp => currentHp;
+    public int MaxHp => maxHp;
+    public int CurrentScore => score;
+    public int CurrentBulletPower => bulletPower;
+    public int CurrentPowerCount => powerCount;
+    public int CurrentSkillBoomCount => skillBoomCount;
+    public int MaxItemCount => maxItemCount;
+
     // ──────────────────────────────────────────────
     // 인스펙터 설정값
     // ──────────────────────────────────────────────
@@ -43,6 +52,24 @@ public class PlayerControll : MonoBehaviour
     [Header("HP 설정")]
     [Tooltip("플레이어 최대 HP")]
     public int maxHp = 3;
+
+    [Header("점수")]
+    [Tooltip("현재 점수")]
+    public int score = 0;
+    [Tooltip("코인 아이템 점수")]
+    public int coinScore = 1000;
+    [Tooltip("파워 아이템 점수")]
+    public int powerScore = 500;
+    [Tooltip("붐 아이템 점수")]
+    public int boomScore = 500;
+
+    [Header("아이템 카운트")]
+    [Tooltip("Power 누적 획득 수")]
+    public int powerCount = 0;
+    [Tooltip("SkillBoom 보유 수")]
+    public int skillBoomCount = 0;
+    [Tooltip("Power / SkillBoom 최대 보유 수")]
+    public int maxItemCount = 3;
 
     // ──────────────────────────────────────────────
     // 내부 상태
@@ -194,17 +221,75 @@ public class PlayerControll : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag("Enemy") && !other.CompareTag("EnemyBullet"))
+        if (other.CompareTag("Enemy"))
+        {
+            TakeDamage(1, other);
+        }
+        else if (other.CompareTag("EnemyBullet"))
+        {
+            TakeDamage(1, other);
+            Destroy(other.gameObject);
+        }
+        else if (other.CompareTag("Item"))
+        {
+            HandleItemCollision(other);
+        }
+    }
+
+    void HandleItemCollision(Collider2D itemCollider)
+    {
+        Item item = itemCollider.GetComponent<Item>();
+        if (item == null)
         {
             return;
         }
 
-        TakeDamage(1, other);
-
-        if (other.CompareTag("EnemyBullet"))
+        switch (item.type)
         {
-            Destroy(other.gameObject);
+            case "Coin":
+                score += coinScore;
+                Debug.Log($"[아이템] Coin 획득 | +{coinScore}점 | 총점: {score}");
+                break;
+
+            case "Power":
+                score += powerScore;
+
+                if (powerCount < maxItemCount)
+                {
+                    powerCount++;
+                }
+
+                if (bulletPower < 3)
+                {
+                    PowerUp();
+                    Debug.Log($"[아이템] Power 획득 | +{powerScore}점 | 파워 단계: {bulletPower}/3 | Power 카운트: {powerCount}/{maxItemCount} | 총점: {score}");
+                }
+                else
+                {
+                    Debug.Log($"[아이템] Power 획득 | +{powerScore}점 | power가 최대입니다 ({bulletPower}/3) | Power 카운트: {powerCount}/{maxItemCount} | 총점: {score}");
+                }
+                break;
+
+            case "Boom":
+                score += boomScore;
+
+                if (skillBoomCount < maxItemCount)
+                {
+                    skillBoomCount++;
+                    Debug.Log($"[아이템] Boom 획득 | +{boomScore}점 | SkillBoom 카운트 증가: {skillBoomCount}/{maxItemCount} | 총점: {score}");
+                }
+                else
+                {
+                    Debug.Log($"[아이템] Boom 획득 | +{boomScore}점 | SkillBoom이 최대입니다 ({skillBoomCount}/{maxItemCount}) | 총점: {score}");
+                }
+                break;
+
+            default:
+                Debug.Log($"알 수 없는 아이템: {item.type}");
+                break;
         }
+
+        Destroy(itemCollider.gameObject);
     }
 
     void TakeDamage(int damage, Collider2D collision)
