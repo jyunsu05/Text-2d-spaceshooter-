@@ -15,60 +15,43 @@ public class EnemySpawnEntry
 // SpawnPoint_0~8 오브젝트들을 자동으로 찾아서 스폰 관리
 public class SpawnManager : MonoBehaviour
 {
-    [Header("SpawnPoint_0~4 에서 소환될 적 (Enemy_A, Enemy_C)")]
-    [SerializeField] private EnemySpawnEntry[] groupA_Entries;
+    [Header("SpawnPoint_0~8 전체에서 소환될 적들")]
+    [SerializeField] private EnemySpawnEntry[] spawnEntries;
 
-    [Header("SpawnPoint_5~8 에서 소환될 적 (Enemy_B 전용)")]
-    [SerializeField] private EnemySpawnEntry[] groupB_Entries;
-
-    private List<SpawnPoint> groupA_Points = new List<SpawnPoint>(); // 0~4
-    private List<SpawnPoint> groupB_Points = new List<SpawnPoint>(); // 5~8
+    private List<SpawnPoint> allPoints = new List<SpawnPoint>(); // 0~8 전체
 
     void Start()
     {
-        // 씬에 있는 모든 SpawnPoint를 찾아서 번호별로 그룹 분류
-        SpawnPoint[] allPoints = FindObjectsByType<SpawnPoint>();
+        // 씬에 있는 모든 SpawnPoint를 찾아서 리스트에 등록
+        SpawnPoint[] found = FindObjectsByType<SpawnPoint>();
 
-        foreach (SpawnPoint point in allPoints)
+        foreach (SpawnPoint point in found)
         {
             int index = point.GetSpawnPointIndex();
-
-            if (index >= 0 && index <= 4)
-                groupA_Points.Add(point);
-            else if (index >= 5 && index <= 8)
-                groupB_Points.Add(point);
+            if (index >= 0 && index <= 8)
+                allPoints.Add(point);
         }
 
-        // GroupA: 적 종류마다 코루틴 하나씩만 돌리고, 소환 위치는 매번 랜덤 선택
-        foreach (EnemySpawnEntry entry in groupA_Entries)
+        // 적 종류마다 코루틴 하나씩 실행, 매 소환마다 랜덤 포인트 선택
+        foreach (EnemySpawnEntry entry in spawnEntries)
         {
             if (entry == null || entry.enemyPrefab == null) continue;
-            StartCoroutine(SpawnLoopRandom(groupA_Points, entry));
-        }
-
-        // GroupB: 각 포인트마다 독립 소환 (5,6 오른쪽 / 7,8 왼쪽 대각선 유지)
-        foreach (SpawnPoint point in groupB_Points)
-        {
-            foreach (EnemySpawnEntry entry in groupB_Entries)
-            {
-                if (entry == null || entry.enemyPrefab == null) continue;
-                StartCoroutine(SpawnLoop(point, entry, true));
-            }
+            StartCoroutine(SpawnLoopRandom(entry));
         }
     }
 
-    // GroupA 전용: 매 소환마다 랜덤 스폰포인트 선택
-    private IEnumerator SpawnLoopRandom(List<SpawnPoint> points, EnemySpawnEntry entry)
+    // 매 소환마다 0~8 중 랜덤 포인트에서 적 생성
+    private IEnumerator SpawnLoopRandom(EnemySpawnEntry entry)
     {
         if (entry.firstSpawnDelay > 0f)
             yield return new WaitForSeconds(entry.firstSpawnDelay);
 
         while (true)
         {
-            if (points.Count > 0)
+            if (allPoints.Count > 0)
             {
-                SpawnPoint randomPoint = points[Random.Range(0, points.Count)];
-                SpawnEnemy(randomPoint, entry.enemyPrefab, false);
+                SpawnPoint randomPoint = allPoints[Random.Range(0, allPoints.Count)];
+                SpawnEnemy(randomPoint, entry.enemyPrefab);
             }
 
             float delay = Random.Range(entry.minSpawnInterval, entry.maxSpawnInterval);
@@ -76,37 +59,36 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    private IEnumerator SpawnLoop(SpawnPoint point, EnemySpawnEntry entry, bool isGroupB)
-    {
-        if (entry.firstSpawnDelay > 0f)
-            yield return new WaitForSeconds(entry.firstSpawnDelay);
-
-        while (true)
-        {
-            SpawnEnemy(point, entry.enemyPrefab, isGroupB);
-
-            float delay = Random.Range(entry.minSpawnInterval, entry.maxSpawnInterval);
-            yield return new WaitForSeconds(delay);
-        }
-    }
-
-    private void SpawnEnemy(SpawnPoint point, GameObject enemyPrefab, bool isGroupB)
+    private void SpawnEnemy(SpawnPoint point, GameObject enemyPrefab)
     {
         if (enemyPrefab == null || point == null) return;
 
-        GameObject spawnedEnemy = Instantiate(enemyPrefab, point.transform.position, Quaternion.identity);
+        int index = point.GetSpawnPointIndex();
 
-        // groupB (5~8)에서만 Enemy_B 대각선 방향 적용
-        if (!isGroupB) return;
+        // 이동 방향 및 소환 각도 결정
+        Vector2 moveDir = Vector2.down;
+        Quaternion rotation = Quaternion.identity;
+
+        if (index == 5 || index == 6)
+        {
+            moveDir = new Vector2(1f, -1f);           // 오른쪽 대각선 이동
+            rotation = Quaternion.Euler(0f, 0f, 45f); // 오른쪽으로 45도 기울기
+        }
+        else if (index == 7 || index == 8)
+        {
+            moveDir = new Vector2(-1f, -1f);           // 왼쪽 대각선 이동
+            rotation = Quaternion.Euler(0f, 0f, -45f);  // 왼쪽으로 45도 기울기
+        }
+
+        GameObject spawnedEnemy = Instantiate(enemyPrefab, point.transform.position, rotation);
 
         Enemy enemy = spawnedEnemy.GetComponent<Enemy>();
         if (enemy == null) return;
 
-        int index = point.GetSpawnPointIndex();
-
+        // 5~8번은 대각선 이동 방향 적용 (이동 로직 유지)
         if (index == 5 || index == 6)
-            enemy.SetMoveDirection(new Vector2(1f, -1f));   // 오른쪽 대각선
+            enemy.SetMoveDirection(new Vector2(1f, -1f));
         else if (index == 7 || index == 8)
-            enemy.SetMoveDirection(new Vector2(-1f, -1f));  // 왼쪽 대각선
+            enemy.SetMoveDirection(new Vector2(-1f, -1f));
     }
 }
