@@ -6,6 +6,15 @@ using UnityEngine;
 /// </summary>
 public class PlayerControll : MonoBehaviour
 {
+    /// <summary>
+    /// 점수 증가 함수 (외부에서 안전하게 호출)
+    /// </summary>
+    /// <param name="amount">올릴 점수</param>
+    public void AddScore(int amount)
+    {
+        score += amount;
+        // 필요시 점수 증가 이펙트/사운드 등 추가 가능
+    }
     // UI/외부 스크립트에서 읽기 쉽게 제공하는 상태값
     public int CurrentHp => currentHp;
     public int MaxHp => maxHp;

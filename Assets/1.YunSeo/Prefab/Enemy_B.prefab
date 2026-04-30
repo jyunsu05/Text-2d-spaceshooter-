@@ -202,3 +202,4 @@ MonoBehaviour:
   itemCoinPrefab: {fileID: 3105807404976320409, guid: 2975ba433a944544091efc8c60cce9f3, type: 3}
   itemPowerPrefab: {fileID: 8601258764337822713, guid: 3f9af06397effeb4fb6959b4de076934, type: 3}
   itemBoomPrefab: {fileID: 1473699978230664702, guid: dc6403be3273a1c419797b000d510a7d, type: 3}
+  enemyScore: 200

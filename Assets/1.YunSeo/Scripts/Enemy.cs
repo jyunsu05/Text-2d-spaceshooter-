@@ -249,6 +249,10 @@ public class Enemy : MonoBehaviour
     // - 아이템 드롭 후 오브젝트 삭제
     // ──────────────────────────────────────────────
 
+    [Header("적 개별 점수 설정")]
+    [Tooltip("이 적이 죽을 때 오를 점수")] 
+    public int enemyScore = 100;
+
     private void Die()
     {
         if (isDead)
@@ -257,6 +261,13 @@ public class Enemy : MonoBehaviour
         }
 
         isDead = true;
+
+        // Inspector에서 지정한 enemyScore만큼 점수 증가
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.AddScore(enemyScore);
+        }
+
         DropItem();
         Destroy(gameObject);
     }
