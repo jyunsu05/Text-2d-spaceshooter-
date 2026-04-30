@@ -243,12 +243,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07c1cc742b84bc945903d49b692165cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  fallSpeed: 3
+  fallSpeed: 1.5
   destroyY: -6
   moveDirection: {x: 0, y: -1}
   enemyBulletPrefab: {fileID: 2275035247208973708, guid: 9b2e937876e18814eac0cf5cf9707f14, type: 3}
   firstShotDelay: 1.2
-  shotInterval: 2
+  shotInterval: 4
   maxHp: 3
   spriteRenderer: {fileID: 0}
   sprites:

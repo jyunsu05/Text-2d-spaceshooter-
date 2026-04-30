@@ -45,7 +45,7 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        StartCoroutine(ShootOnce());
+        StartCoroutine(ShootLoop());
     }
 
     void Update()
@@ -108,22 +108,26 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private IEnumerator ShootOnce()
+    private IEnumerator ShootLoop()
     {
         if (firstShotDelay > 0f)
         {
             yield return new WaitForSeconds(firstShotDelay);
         }
 
-        float visibilityCheckInterval = Mathf.Max(0.05f, shotInterval);
+        // 화면에 진입할 때까지 대기
         while (!IsInsideMainCameraView())
         {
-            yield return new WaitForSeconds(visibilityCheckInterval);
+            yield return new WaitForSeconds(0.05f);
         }
 
-        // EnemyPoint_1, EnemyPoint_2에서 각각 1발씩, 총 2발을 한 번만 발사
-        ShootFromPoint(enemyPoint1);
-        ShootFromPoint(enemyPoint2);
+        // 화면 안에 있는 동안 계속 발사
+        while (IsInsideMainCameraView())
+        {
+            ShootFromPoint(enemyPoint1);
+            ShootFromPoint(enemyPoint2);
+            yield return new WaitForSeconds(shotInterval);
+        }
     }
 
     private void ShootFromPoint(Transform firePoint)

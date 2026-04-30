@@ -186,7 +186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07c1cc742b84bc945903d49b692165cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  fallSpeed: 3
+  fallSpeed: 5
   destroyY: -6
   moveDirection: {x: 0, y: -1}
   enemyBulletPrefab: {fileID: 0}
