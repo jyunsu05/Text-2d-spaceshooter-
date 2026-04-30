@@ -558,6 +558,10 @@ PrefabInstance:
       propertyPath: bulletPower
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6400574928868464592, guid: 4129670f2c80ae04bb35247b1fb87fe1, type: 3}
+      propertyPath: skillBoomCount
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6459729462266611640, guid: 4129670f2c80ae04bb35247b1fb87fe1, type: 3}
       propertyPath: m_Name
       value: Player
@@ -697,6 +701,58 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: spawnEntries.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: spawnEntries.Array.data[0].enemyPrefab
+      value: 
+      objectReference: {fileID: 6582011577875457899, guid: 242b244936bc87240860196e7f43f97e, type: 3}
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: spawnEntries.Array.data[1].enemyPrefab
+      value: 
+      objectReference: {fileID: 2027619264219988834, guid: aa141e190b21785449d68619872511d8, type: 3}
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: spawnEntries.Array.data[2].enemyPrefab
+      value: 
+      objectReference: {fileID: 4133347090381250563, guid: a7b9fe19157f5154f9f92cf9dc04ab3d, type: 3}
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: spawnEntries.Array.data[0].firstSpawnDelay
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: spawnEntries.Array.data[1].firstSpawnDelay
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: spawnEntries.Array.data[2].firstSpawnDelay
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: spawnEntries.Array.data[0].maxSpawnInterval
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: spawnEntries.Array.data[0].minSpawnInterval
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: spawnEntries.Array.data[1].maxSpawnInterval
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: spawnEntries.Array.data[1].minSpawnInterval
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: spawnEntries.Array.data[2].maxSpawnInterval
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: spawnEntries.Array.data[2].minSpawnInterval
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 2424055870687606448, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
       propertyPath: m_Name
       value: SpawnManager
