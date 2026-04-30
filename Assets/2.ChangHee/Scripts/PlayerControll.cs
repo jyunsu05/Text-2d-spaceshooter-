@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -56,6 +57,8 @@ public class PlayerControll : MonoBehaviour
     [Header("HP 설정")]
     [Tooltip("플레이어 최대 HP")]
     public int maxHp = 3;
+    [Tooltip("피격 후 무적 지속 시간(초)")]
+    public float invincibleDuration = 1.0f;
 
     [Header("점수")]
     [Tooltip("현재 점수")]
@@ -83,8 +86,11 @@ public class PlayerControll : MonoBehaviour
     private Camera mainCamera;
     private float halfWidth;      // 스프라이트 가로 절반 크기 (화면 경계 계산용)
     private float halfHeight;     // 스프라이트 세로 절반 크기 (화면 경계 계산용)
+    private SpriteRenderer playerSpriteRenderer;
     private Animator animator;
     private int currentHp;
+    private bool isInvincible;
+    private Coroutine invincibleRoutine;
 
     // ──────────────────────────────────────────────
     // 초기화
@@ -96,11 +102,11 @@ public class PlayerControll : MonoBehaviour
         currentHp = maxHp;
 
         // 화면 경계 클램핑에 사용할 스프라이트 크기 캐싱
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
+        playerSpriteRenderer = GetComponent<SpriteRenderer>();
+        if (playerSpriteRenderer != null)
         {
-            halfWidth  = sr.bounds.extents.x;
-            halfHeight = sr.bounds.extents.y;
+            halfWidth  = playerSpriteRenderer.bounds.extents.x;
+            halfHeight = playerSpriteRenderer.bounds.extents.y;
         }
 
         animator = GetComponent<Animator>();
@@ -146,14 +152,14 @@ public class PlayerControll : MonoBehaviour
     void ShootInput()
     {
         // 마우스 왼쪽: 일반 총알 연사
-        if (Input.GetMouseButton(0) && Time.time >= nextShotTime)
+        if (!isInvincible && Input.GetMouseButton(0) && Time.time >= nextShotTime)
         {
             Shoot();
             nextShotTime = Time.time + shotInterval;
         }
 
         // 마우스 우클릭: 스킬붐 발동
-        if (Input.GetMouseButtonDown(1))
+        if (!isInvincible && Input.GetMouseButtonDown(1))
         {
             UseSkillBoom();
         }
@@ -349,7 +355,9 @@ public class PlayerControll : MonoBehaviour
     // ──────────────────────────────────────────────
     // 피격 처리
     // - HP가 이미 0이면 피격 무시 + 로그 출력
+    // - 무적 상태면 피격 무시
     // - HP가 남아있으면 damage만큼 감소
+    // - 피격 후 invincibleDuration 동안 무적
     // - HP가 0이 되면 "체력 부족" 로그 출력
     // - 로그 형식: (현재 체력 / 최대 체력) = 충돌 개체 : 개체 이름
     // ──────────────────────────────────────────────
@@ -363,14 +371,58 @@ public class PlayerControll : MonoBehaviour
             return;
         }
 
+        if (isInvincible)
+        {
+            return;
+        }
+
         int previousHp = currentHp;
         currentHp = Mathf.Max(0, currentHp - damage);
         string type = collision.CompareTag("Enemy") ? "적" : "적 총알";
         Debug.Log($"({previousHp} / {maxHp}) = {type} : {collision.gameObject.name}");
 
+        if (invincibleRoutine != null)
+        {
+            StopCoroutine(invincibleRoutine);
+        }
+        invincibleRoutine = StartCoroutine(InvincibleRoutine());
+
         if (currentHp <= 0)
         {
             Debug.Log($"({currentHp} / {maxHp}) = 플레이어 체력 부족");
+        }
+    }
+
+    IEnumerator InvincibleRoutine()
+    {
+        isInvincible = true;
+        Debug.Log($"[무적] 시작 ({Mathf.Max(0f, invincibleDuration):0.00}초)");
+
+        if (playerSpriteRenderer != null)
+        {
+            // 무적 시간 동안 플레이어 아이콘 숨김
+            playerSpriteRenderer.enabled = false;
+        }
+
+        yield return new WaitForSeconds(Mathf.Max(0f, invincibleDuration));
+
+        if (playerSpriteRenderer != null)
+        {
+            // 무적 종료 시 아이콘 다시 표시
+            playerSpriteRenderer.enabled = true;
+        }
+
+        isInvincible = false;
+        invincibleRoutine = null;
+        Debug.Log("[무적] 종료");
+    }
+
+    private void OnDisable()
+    {
+        // 오브젝트 비활성화/파괴 시 아이콘이 꺼진 채 남지 않도록 복구
+        if (playerSpriteRenderer != null)
+        {
+            playerSpriteRenderer.enabled = true;
         }
     }
 }
