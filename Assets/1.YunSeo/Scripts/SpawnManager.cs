@@ -27,7 +27,7 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         // 씬에 있는 모든 SpawnPoint를 찾아서 번호별로 그룹 분류
-        SpawnPoint[] allPoints = FindObjectsByType<SpawnPoint>(FindObjectsSortMode.None);
+        SpawnPoint[] allPoints = FindObjectsByType<SpawnPoint>();
 
         foreach (SpawnPoint point in allPoints)
         {

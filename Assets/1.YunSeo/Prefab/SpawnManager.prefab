@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &1290751715419597349
 GameObject:
@@ -41,7 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1290751715419597349}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67a662021edd98145bc6a2601f0fac74, type: 3}
+  m_Script: {fileID: 11500000, guid: e92c6d03d389d6f46b03a3883eefa89b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
 --- !u!1 &1855040305578694132
@@ -85,7 +85,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1855040305578694132}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67a662021edd98145bc6a2601f0fac74, type: 3}
+  m_Script: {fileID: 11500000, guid: e92c6d03d389d6f46b03a3883eefa89b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
 --- !u!1 &2424055870687606448
@@ -196,7 +196,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3265293359632602794}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67a662021edd98145bc6a2601f0fac74, type: 3}
+  m_Script: {fileID: 11500000, guid: e92c6d03d389d6f46b03a3883eefa89b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
 --- !u!1 &3598343724440077520
@@ -240,7 +240,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3598343724440077520}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67a662021edd98145bc6a2601f0fac74, type: 3}
+  m_Script: {fileID: 11500000, guid: e92c6d03d389d6f46b03a3883eefa89b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
 --- !u!1 &3896798986045871539
@@ -284,7 +284,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3896798986045871539}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67a662021edd98145bc6a2601f0fac74, type: 3}
+  m_Script: {fileID: 11500000, guid: e92c6d03d389d6f46b03a3883eefa89b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
 --- !u!1 &6230905436682772349
@@ -328,7 +328,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6230905436682772349}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67a662021edd98145bc6a2601f0fac74, type: 3}
+  m_Script: {fileID: 11500000, guid: e92c6d03d389d6f46b03a3883eefa89b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
 --- !u!1 &7349401846019367315
@@ -372,7 +372,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7349401846019367315}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67a662021edd98145bc6a2601f0fac74, type: 3}
+  m_Script: {fileID: 11500000, guid: e92c6d03d389d6f46b03a3883eefa89b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
 --- !u!1 &8705214223099452756
@@ -416,7 +416,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8705214223099452756}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67a662021edd98145bc6a2601f0fac74, type: 3}
+  m_Script: {fileID: 11500000, guid: e92c6d03d389d6f46b03a3883eefa89b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
 --- !u!1 &9118662837931820228
@@ -460,6 +460,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 9118662837931820228}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67a662021edd98145bc6a2601f0fac74, type: 3}
+  m_Script: {fileID: 11500000, guid: e92c6d03d389d6f46b03a3883eefa89b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
+
