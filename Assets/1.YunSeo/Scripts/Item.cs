@@ -41,7 +41,7 @@ public class Item : MonoBehaviour
     private void Update()
     {
         // 아래 방향으로 이동 (프레임 독립적)
-        transform.Translate(Vector2.down * 0.5f * Time.deltaTime);
+        transform.Translate(Vector2.down * 2f * Time.deltaTime);
 
         // 화면 아래로 완전히 벗어나면 삭제
         if (transform.position.y <= -7f)
