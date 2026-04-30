@@ -249,7 +249,7 @@ MonoBehaviour:
   enemyBulletPrefab: {fileID: 2275035247208973708, guid: 9b2e937876e18814eac0cf5cf9707f14, type: 3}
   firstShotDelay: 1.2
   shotInterval: 4
-  maxHp: 3
+  maxHp: 150
   spriteRenderer: {fileID: 0}
   sprites:
   - {fileID: -8421458170528590454, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
