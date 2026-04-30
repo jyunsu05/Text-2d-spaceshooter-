@@ -572,7 +572,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af91b498745678d4e974de9b20758ad5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::playercontroll
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerControll
   speed: 5
   bulletPower: 1
   smallBulletPrefab: {fileID: 0}
