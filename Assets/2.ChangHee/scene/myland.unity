@@ -631,7 +631,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::playercontroll
   speed: 5
-  bulletPower: 3
+  bulletPower: 1
   leftBulletPrefab: {fileID: 6206190152786135884, guid: b6bcc8783cbc14c23b41efc1e1efec4b, type: 3}
   centerBulletPrefab: {fileID: 2686513862860052424, guid: 6a12c0aac22544c4e8c6ce722fb3846d, type: 3}
   rightBulletPrefab: {fileID: 6206190152786135884, guid: 4eebbd37f729af0429db1c44cf5ca99e, type: 3}
