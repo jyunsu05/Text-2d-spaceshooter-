@@ -266,6 +266,7 @@ public class Enemy : MonoBehaviour
         if (UIManager.Instance != null)
         {
             UIManager.Instance.AddScore(enemyScore);
+            Debug.Log($"[점수] {gameObject.name} 처치 → +{enemyScore}점 / 현재 총점: {UIManager.Instance.player?.CurrentScore}");
         }
 
         DropItem();
