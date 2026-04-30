@@ -33,6 +33,10 @@ public class PlayerControll : MonoBehaviour
     [Tooltip("대형 총알 프리팹 (파워3 중앙 발사용)")]
     public GameObject largeBulletPrefab;
 
+    [Header("스킬붐")]
+    [Tooltip("SkillBoom 프리팹 (마우스 우클릭으로 발동)")]
+    public GameObject skillBoomPrefab;
+
     [Header("총알 발사 위치")]
     [Tooltip("총알이 생성될 기준 위치")]
     public Transform firePoint;
@@ -141,10 +145,17 @@ public class PlayerControll : MonoBehaviour
 
     void ShootInput()
     {
+        // 마우스 왼쪽: 일반 총알 연사
         if (Input.GetMouseButton(0) && Time.time >= nextShotTime)
         {
             Shoot();
             nextShotTime = Time.time + shotInterval;
+        }
+
+        // 마우스 우클릭: 스킬붐 발동
+        if (Input.GetMouseButtonDown(1))
+        {
+            UseSkillBoom();
         }
     }
 
@@ -199,6 +210,32 @@ public class PlayerControll : MonoBehaviour
     public void PowerUp()
     {
         bulletPower = Mathf.Min(bulletPower + 1, 3);
+    }
+
+    // ──────────────────────────────────────────────
+    // 스킬붐 발동 (마우스 우클릭)
+    // - skillBoomCount가 1 이상일 때만 사용 가능
+    // - 카운트 -1 후 플레이어 위치에 SkillBoom 프리팹 생성
+    // - 실제 적 제거는 SkillBoom.cs에서 처리
+    // ──────────────────────────────────────────────
+
+    void UseSkillBoom()
+    {
+        if (skillBoomCount <= 0)
+        {
+            Debug.Log("[스킬붐] 보유 수량이 없습니다.");
+            return;
+        }
+
+        if (skillBoomPrefab == null)
+        {
+            Debug.LogWarning("[스킬붐] skillBoomPrefab이 연결되지 않았습니다.");
+            return;
+        }
+
+        skillBoomCount--;
+        Instantiate(skillBoomPrefab, Vector3.zero, Quaternion.identity);
+        Debug.Log($"[스킬붐] 발동! 남은 수량: {skillBoomCount}/{maxItemCount}");
     }
 
     // ──────────────────────────────────────────────
