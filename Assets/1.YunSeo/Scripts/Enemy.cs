@@ -12,6 +12,9 @@ public class Enemy : MonoBehaviour
     [SerializeField] private int maxHp = 3;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Sprite[] sprites;
+    [SerializeField] private GameObject itemCoinPrefab;
+    [SerializeField] private GameObject itemPowerPrefab;
+    [SerializeField] private GameObject itemBoomPrefab;
 
     private int currentHp;
     private Transform enemyPoint1;
@@ -105,7 +108,36 @@ public class Enemy : MonoBehaviour
 
     private void Die()
     {
+        DropItem();
         Destroy(gameObject);
+    }
+
+    private void DropItem()
+    {
+        float rand = Random.value; // 0.0 ~ 1.0
+        GameObject prefab = null;
+
+        if (rand < 0.30f)           // 0% ~ 30% : None
+        {
+            return;
+        }
+        else if (rand < 0.60f)      // 30% ~ 60% : Coin
+        {
+            prefab = itemCoinPrefab;
+        }
+        else if (rand < 0.80f)      // 60% ~ 80% : Power
+        {
+            prefab = itemPowerPrefab;
+        }
+        else                        // 80% ~ 100% : Boom
+        {
+            prefab = itemBoomPrefab;
+        }
+
+        if (prefab != null)
+        {
+            Instantiate(prefab, transform.position, Quaternion.identity);
+        }
     }
 
     private IEnumerator ShootLoop()

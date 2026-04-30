@@ -8,6 +8,7 @@ TagManager:
   - EnemyBullet
   - BackGround
   - Bullet
+  - Item
   layers:
   - Default
   - TransparentFX
