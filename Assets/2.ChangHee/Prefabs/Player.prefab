@@ -142,10 +142,19 @@ MonoBehaviour:
   bulletPower: 2
   smallBulletPrefab: {fileID: 6206190152786135884, guid: b6bcc8783cbc14c23b41efc1e1efec4b, type: 3}
   largeBulletPrefab: {fileID: 2686513862860052424, guid: 6a12c0aac22544c4e8c6ce722fb3846d, type: 3}
+  skillBoomPrefab: {fileID: 1587367563823329999, guid: 32e115843553e284e9f095c1d79d6c7e, type: 3}
   firePoint: {fileID: 2333087359830603176}
   power2Offset: 0.1
   power3Offset: 0.25
   shotInterval: 0.12
+  maxHp: 3
+  score: 0
+  coinScore: 1000
+  powerScore: 500
+  boomScore: 500
+  powerCount: 0
+  skillBoomCount: 0
+  maxItemCount: 3
 --- !u!95 &4821744394537200225
 Animator:
   serializedVersion: 7

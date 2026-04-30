@@ -33,6 +33,10 @@ public class PlayerControll : MonoBehaviour
     [Tooltip("대형 총알 프리팹 (파워3 중앙 발사용)")]
     public GameObject largeBulletPrefab;
 
+    [Header("스킬붐")]
+    [Tooltip("SkillBoom 프리팹 (마우스 우클릭으로 발동)")]
+    public GameObject skillBoomPrefab;
+
     [Header("총알 발사 위치")]
     [Tooltip("총알이 생성될 기준 위치")]
     public Transform firePoint;
@@ -141,10 +145,17 @@ public class PlayerControll : MonoBehaviour
 
     void ShootInput()
     {
+        // 마우스 왼쪽: 일반 총알 연사
         if (Input.GetMouseButton(0) && Time.time >= nextShotTime)
         {
             Shoot();
             nextShotTime = Time.time + shotInterval;
+        }
+
+        // 마우스 우클릭: 스킬붐 발동
+        if (Input.GetMouseButtonDown(1))
+        {
+            UseSkillBoom();
         }
     }
 
@@ -202,6 +213,32 @@ public class PlayerControll : MonoBehaviour
     }
 
     // ──────────────────────────────────────────────
+    // 스킬붐 발동 (마우스 우클릭)
+    // - skillBoomCount가 1 이상일 때만 사용 가능
+    // - 카운트 -1 후 플레이어 위치에 SkillBoom 프리팹 생성
+    // - 실제 적 제거는 SkillBoom.cs에서 처리
+    // ──────────────────────────────────────────────
+
+    void UseSkillBoom()
+    {
+        if (skillBoomCount <= 0)
+        {
+            Debug.Log("[스킬붐] 보유 수량이 없습니다.");
+            return;
+        }
+
+        if (skillBoomPrefab == null)
+        {
+            Debug.LogWarning("[스킬붐] skillBoomPrefab이 연결되지 않았습니다.");
+            return;
+        }
+
+        skillBoomCount--;
+        Instantiate(skillBoomPrefab, Vector3.zero, Quaternion.identity);
+        Debug.Log($"[스킬붐] 발동! 남은 수량: {skillBoomCount}/{maxItemCount}");
+    }
+
+    // ──────────────────────────────────────────────
     // 화면 경계 클램핑
     // 플레이어가 카메라 뷰포트 밖으로 나가지 않도록 위치를 제한한다.
     // ──────────────────────────────────────────────
@@ -219,6 +256,13 @@ public class PlayerControll : MonoBehaviour
         transform.position = pos;
     }
 
+    // ──────────────────────────────────────────────
+    // 충돌 감지
+    // - Enemy(적 본체): 체력 -1
+    // - EnemyBullet(적 총알): 체력 -1 + 총알 삭제
+    // - Item(아이템): 종류별 효과 적용
+    // ──────────────────────────────────────────────
+
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Enemy"))
@@ -235,6 +279,16 @@ public class PlayerControll : MonoBehaviour
             HandleItemCollision(other);
         }
     }
+
+    // ──────────────────────────────────────────────
+    // 아이템 충돌 처리
+    // - Item 컴포넌트의 type 값으로 종류 구분
+    //   Coin  : 점수 +1000
+    //   Power : 점수 +500, 파워 단계 +1 (최대 3단계)
+    //           powerCount 증가 (최대 3)
+    //   Boom  : 점수 +500, skillBoomCount 증가 (최대 3)
+    // - 충돌한 아이템 오브젝트는 항상 삭제
+    // ──────────────────────────────────────────────
 
     void HandleItemCollision(Collider2D itemCollider)
     {
@@ -291,6 +345,14 @@ public class PlayerControll : MonoBehaviour
 
         Destroy(itemCollider.gameObject);
     }
+
+    // ──────────────────────────────────────────────
+    // 피격 처리
+    // - HP가 이미 0이면 피격 무시 + 로그 출력
+    // - HP가 남아있으면 damage만큼 감소
+    // - HP가 0이 되면 "체력 부족" 로그 출력
+    // - 로그 형식: (현재 체력 / 최대 체력) = 충돌 개체 : 개체 이름
+    // ──────────────────────────────────────────────
 
     void TakeDamage(int damage, Collider2D collision)
     {
