@@ -40,6 +40,10 @@ public class PlayerControll : MonoBehaviour
     [Tooltip("총알 발사 간격 (초). 낮을수록 빠른 연사")]
     public float shotInterval = 0.12f;
 
+    [Header("HP 설정")]
+    [Tooltip("플레이어 최대 HP")]
+    public int maxHp = 3;
+
     // ──────────────────────────────────────────────
     // 내부 상태
     // ──────────────────────────────────────────────
@@ -49,6 +53,7 @@ public class PlayerControll : MonoBehaviour
     private float halfWidth;      // 스프라이트 가로 절반 크기 (화면 경계 계산용)
     private float halfHeight;     // 스프라이트 세로 절반 크기 (화면 경계 계산용)
     private Animator animator;
+    private int currentHp;
 
     // ──────────────────────────────────────────────
     // 초기화
@@ -57,6 +62,7 @@ public class PlayerControll : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
+        currentHp = maxHp;
 
         // 화면 경계 클램핑에 사용할 스프라이트 크기 캐싱
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
@@ -184,5 +190,40 @@ public class PlayerControll : MonoBehaviour
         pos.x = Mathf.Clamp(pos.x, min.x + halfWidth,  max.x - halfWidth);
         pos.y = Mathf.Clamp(pos.y, min.y + halfHeight, max.y - halfHeight);
         transform.position = pos;
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!other.CompareTag("Enemy") && !other.CompareTag("EnemyBullet"))
+        {
+            return;
+        }
+
+        TakeDamage(1, other);
+
+        if (other.CompareTag("EnemyBullet"))
+        {
+            Destroy(other.gameObject);
+        }
+    }
+
+    void TakeDamage(int damage, Collider2D collision)
+    {
+        if (currentHp <= 0)
+        {
+            string collisionType = collision.CompareTag("Enemy") ? "적" : "적 총알";
+            Debug.Log($"({currentHp} / {maxHp}) = {collisionType} : {collision.gameObject.name} (체력 없음)");
+            return;
+        }
+
+        int previousHp = currentHp;
+        currentHp = Mathf.Max(0, currentHp - damage);
+        string type = collision.CompareTag("Enemy") ? "적" : "적 총알";
+        Debug.Log($"({previousHp} / {maxHp}) = {type} : {collision.gameObject.name}");
+
+        if (currentHp <= 0)
+        {
+            Debug.Log($"({currentHp} / {maxHp}) = 플레이어 체력 부족");
+        }
     }
 }

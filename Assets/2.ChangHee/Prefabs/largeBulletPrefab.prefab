@@ -135,7 +135,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
   speed: 12
   viewportMargin: 0.05
-  damage: 1
+  damage: 10
 --- !u!61 &-3264484358441467389
 BoxCollider2D:
   m_ObjectHideFlags: 0

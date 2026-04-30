@@ -9,6 +9,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] private GameObject enemyBulletPrefab;
     [SerializeField] private float firstShotDelay = 1.2f;
     [SerializeField] private float shotInterval = 2f;
+    [SerializeField] private int playerBulletDamage = 5;
+    [SerializeField] private float hitFeedbackDuration = 0.1f;
     [SerializeField] private int maxHp = 3;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Sprite[] sprites;
@@ -20,6 +22,9 @@ public class Enemy : MonoBehaviour
     private Transform enemyPoint1;
     private Transform enemyPoint2;
     private bool canShoot;
+    private Coroutine hitFeedbackRoutine;
+    private Sprite normalSprite;
+    private Sprite hitSprite;
 
     void Awake()
     {
@@ -30,7 +35,7 @@ public class Enemy : MonoBehaviour
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        UpdateSprite();
+        InitializeSprites();
 
         canShoot = gameObject.name.StartsWith("Enemy_C");
 
@@ -75,8 +80,20 @@ public class Enemy : MonoBehaviour
 
     public void Hit(int damage = 1)
     {
+        int previousHp = currentHp;
         currentHp -= damage;
-        UpdateSprite();
+        currentHp = Mathf.Max(currentHp, 0);
+        Debug.Log($"{gameObject.name} hit! Damage: {damage}, HP: {previousHp} -> {currentHp}");
+
+        if (currentHp > 0)
+        {
+            if (hitFeedbackRoutine != null)
+            {
+                StopCoroutine(hitFeedbackRoutine);
+            }
+
+            hitFeedbackRoutine = StartCoroutine(PlayHitFeedback());
+        }
 
         if (currentHp <= 0)
         {
@@ -86,24 +103,71 @@ public class Enemy : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag("Bullet") || other.CompareTag("EnemyBullet"))
+        if (!other.CompareTag("playerBullet"))
         {
             return;
         }
 
-        Hit();
+        int appliedDamage = playerBulletDamage;
+        Bullet bullet = other.GetComponent<Bullet>();
+        if (bullet != null)
+        {
+            appliedDamage = bullet.damage;
+        }
+
+        int previousHp = currentHp;
+        Hit(appliedDamage);
+        Debug.Log($"({previousHp} / {maxHp}) = 플레이어 총알 : {other.gameObject.name}");
         Destroy(other.gameObject);
     }
 
-    private void UpdateSprite()
+    private void InitializeSprites()
     {
-        if (spriteRenderer == null || sprites == null || sprites.Length == 0)
+        if (spriteRenderer == null)
         {
             return;
         }
 
-        int damageLevel = Mathf.Clamp(maxHp - currentHp, 0, sprites.Length - 1);
-        spriteRenderer.sprite = sprites[damageLevel];
+        if (sprites != null && sprites.Length > 0)
+        {
+            normalSprite = sprites[0];
+            spriteRenderer.sprite = normalSprite;
+
+            if (sprites.Length > 1)
+            {
+                hitSprite = sprites[1];
+            }
+        }
+        else
+        {
+            normalSprite = spriteRenderer.sprite;
+        }
+    }
+
+    private IEnumerator PlayHitFeedback()
+    {
+        if (spriteRenderer == null)
+        {
+            yield break;
+        }
+
+        if (hitSprite != null)
+        {
+            spriteRenderer.sprite = hitSprite;
+        }
+        else
+        {
+            spriteRenderer.color = Color.red;
+        }
+
+        yield return new WaitForSeconds(Mathf.Max(0.01f, hitFeedbackDuration));
+
+        if (normalSprite != null)
+        {
+            spriteRenderer.sprite = normalSprite;
+        }
+        spriteRenderer.color = Color.white;
+        hitFeedbackRoutine = null;
     }
 
     private void Die()

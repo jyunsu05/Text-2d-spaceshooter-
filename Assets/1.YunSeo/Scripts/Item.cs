@@ -14,7 +14,7 @@ public class Item : MonoBehaviour
 
     private void Update()
     {
-        transform.Translate(Vector2.down * 0.1f * Time.deltaTime);
+        transform.Translate(Vector2.down * 0.5f * Time.deltaTime);
         if (transform.position.y <= -7f)
         {
             Destroy(gameObject);
