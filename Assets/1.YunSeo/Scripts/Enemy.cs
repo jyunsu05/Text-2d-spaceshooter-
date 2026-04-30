@@ -94,9 +94,9 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        // moveDirection 방향으로 fallSpeed 속도로 이동
+        // moveDirection 방향으로 fallSpeed 속도로 이동 (월드 좌표 기준)
         Vector3 movement = (Vector3)moveDirection.normalized * fallSpeed * Time.deltaTime;
-        transform.Translate(movement);
+        transform.Translate(movement, Space.World);
 
         // 화면 아래로 벗어나면 삭제
         if (transform.position.y <= destroyY)
