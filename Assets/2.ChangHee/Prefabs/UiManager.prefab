@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d48994e86fd0faa468e488624adc6005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
-  player: {fileID: 0}
+  player: {fileID: 6400574928868464592, guid: 4129670f2c80ae04bb35247b1fb87fe1, type: 3}
   scoreText: {fileID: 0}
   hpImages:
   - {fileID: 0}
