@@ -172,6 +172,12 @@ public class Enemy : MonoBehaviour
 
     public void Hit(int damage = 1)
     {
+        // 풀 반납(비활성화) 직후 들어온 지연 충돌 이벤트는 무시
+        if (!isActiveAndEnabled || !gameObject.activeInHierarchy || isDead)
+        {
+            return;
+        }
+
         int previousHp = currentHp;
         currentHp -= damage;
         currentHp = Mathf.Max(currentHp, 0);
@@ -185,7 +191,11 @@ public class Enemy : MonoBehaviour
                 StopCoroutine(hitFeedbackRoutine);
             }
 
-            hitFeedbackRoutine = StartCoroutine(PlayHitFeedback());
+            // 비활성 상태에서는 코루틴 시작 불가
+            if (isActiveAndEnabled && gameObject.activeInHierarchy)
+            {
+                hitFeedbackRoutine = StartCoroutine(PlayHitFeedback());
+            }
         }
 
         if (currentHp <= 0)
@@ -203,6 +213,11 @@ public class Enemy : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        if (!isActiveAndEnabled || !gameObject.activeInHierarchy || isDead)
+        {
+            return;
+        }
+
         if (!other.CompareTag("playerBullet"))
         {
             return;
