@@ -97,10 +97,13 @@ public class SpawnManager : MonoBehaviour
         Enemy enemy = spawnedEnemy.GetComponent<Enemy>();
         if (enemy == null) return;
 
-        // 5~8번은 대각선 이동 방향 적용 (이동 로직 유지)
+        // 포인트 번호에 따라 이동 방향 명시 설정
+        // 0~4: 위에서 아래로 직진, 5~6: 오른쪽 대각선, 7~8: 왼쪽 대각선
         if (index == 5 || index == 6)
             enemy.SetMoveDirection(new Vector2(1f, -1f));
         else if (index == 7 || index == 8)
             enemy.SetMoveDirection(new Vector2(-1f, -1f));
+        else
+            enemy.SetMoveDirection(Vector2.down); // 풀 재사용 시 이전 대각선 방향 초기화
     }
 }

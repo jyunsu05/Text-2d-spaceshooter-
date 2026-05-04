@@ -17,16 +17,15 @@ public class SkillBoom : MonoBehaviour
 
     private CircleCollider2D circleCollider;
     private ObjectManager objectManager;
+    private Coroutine returnRoutine;
 
     // ──────────────────────────────────────────────────────────────
-    // 생성 시 실행
-    // - CircleCollider2D를 트리거로 사용해 애니메이션 재생 중 닿는 적/적 총알 제거
-    // - duration이 0보다 크면 해당 시간만큼 대기 후 삭제
-    // - duration이 0이면 애니메이션 클립 길이만큼 대기 후 삭제
-    //   (Animator도 없으면 즉시 삭제)
+    // Awake: 컴포넌트 참조 1회 초기화 (풀 재사용 시에도 유지됨)
+    // OnEnable: 활성화될 때마다 지속시간 코루틴 시작 (풀 재사용 대응)
+    // OnDisable: 비활성화 시 코루틴 정리
     // ──────────────────────────────────────────────────────────────
 
-    void Start()
+    void Awake()
     {
         objectManager = ObjectManager.Instance;
 
@@ -39,6 +38,12 @@ public class SkillBoom : MonoBehaviour
         {
             circleCollider.isTrigger = true;
         }
+    }
+
+    void OnEnable()
+    {
+        if (objectManager == null)
+            objectManager = ObjectManager.Instance;
 
         // duration이 지정되어 있으면 그 시간 사용
         // 아니면 애니메이터 클립 길이 자동 계산
@@ -57,7 +62,16 @@ public class SkillBoom : MonoBehaviour
             }
         }
 
-        StartCoroutine(ReturnAfterDelay(Mathf.Max(0f, destroyDelay)));
+        returnRoutine = StartCoroutine(ReturnAfterDelay(Mathf.Max(0f, destroyDelay)));
+    }
+
+    void OnDisable()
+    {
+        if (returnRoutine != null)
+        {
+            StopCoroutine(returnRoutine);
+            returnRoutine = null;
+        }
     }
 
     private System.Collections.IEnumerator ReturnAfterDelay(float delay)
