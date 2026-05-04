@@ -16,6 +16,7 @@ public class SkillBoom : MonoBehaviour
     public float duration = 2f;
 
     private CircleCollider2D circleCollider;
+    private ObjectManager objectManager;
 
     // ──────────────────────────────────────────────────────────────
     // 생성 시 실행
@@ -27,6 +28,8 @@ public class SkillBoom : MonoBehaviour
 
     void Start()
     {
+        objectManager = ObjectManager.Instance;
+
         circleCollider = GetComponent<CircleCollider2D>();
         if (circleCollider == null)
         {
@@ -54,7 +57,26 @@ public class SkillBoom : MonoBehaviour
             }
         }
 
-        Destroy(gameObject, destroyDelay);
+        StartCoroutine(ReturnAfterDelay(Mathf.Max(0f, destroyDelay)));
+    }
+
+    private System.Collections.IEnumerator ReturnAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (objectManager == null)
+        {
+            objectManager = ObjectManager.Instance;
+        }
+
+        if (objectManager != null)
+        {
+            objectManager.ReturnObj(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -76,7 +98,19 @@ public class SkillBoom : MonoBehaviour
 
         if (other.CompareTag("Enemy") || other.CompareTag("EnemyBullet"))
         {
-            Destroy(other.gameObject);
+            if (objectManager == null)
+            {
+                objectManager = ObjectManager.Instance;
+            }
+
+            if (objectManager != null)
+            {
+                objectManager.ReturnObj(other.gameObject);
+            }
+            else
+            {
+                Destroy(other.gameObject);
+            }
         }
     }
 }

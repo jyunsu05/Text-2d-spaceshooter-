@@ -6,6 +6,8 @@ using UnityEngine;
 /// </summary>
 public class PlayerControll : MonoBehaviour
 {
+    private ObjectManager objectManager;
+
     /// <summary>
     /// 점수 증가 함수 (외부에서 안전하게 호출)
     /// </summary>
@@ -109,6 +111,7 @@ public class PlayerControll : MonoBehaviour
     {
         mainCamera = Camera.main;
         currentHp = maxHp;
+        objectManager = ObjectManager.Instance;
 
         // 화면 경계 클램핑에 사용할 스프라이트 크기 캐싱
         playerSpriteRenderer = GetComponent<SpriteRenderer>();
@@ -187,7 +190,7 @@ public class PlayerControll : MonoBehaviour
         {
             case 1:
                 // 중앙 소형 총알 1발
-                Instantiate(smallBulletPrefab, firePoint.position, firePoint.rotation);
+                SpawnBulletFromManager("smallBullet", firePoint.position, firePoint.rotation);
                 break;
 
             case 2:
@@ -198,7 +201,7 @@ public class PlayerControll : MonoBehaviour
 
             case 3:
                 // 중앙 대형 총알 + 좌우 소형 총알
-                Instantiate(largeBulletPrefab, firePoint.position, firePoint.rotation);
+                SpawnBulletFromManager("largeBullet", firePoint.position, firePoint.rotation);
                 SpawnBullet(smallBulletPrefab, -power3Offset);
                 SpawnBullet(smallBulletPrefab,  power3Offset);
                 break;
@@ -213,7 +216,33 @@ public class PlayerControll : MonoBehaviour
     void SpawnBullet(GameObject prefab, float xOffset)
     {
         Vector3 spawnPos = firePoint.position + new Vector3(xOffset, 0f, 0f);
-        Instantiate(prefab, spawnPos, firePoint.rotation);
+
+        string bulletType = prefab == largeBulletPrefab ? "largeBullet" : "smallBullet";
+        SpawnBulletFromManager(bulletType, spawnPos, firePoint.rotation);
+    }
+
+    private void SpawnBulletFromManager(string type, Vector3 position, Quaternion rotation)
+    {
+        if (objectManager == null)
+        {
+            objectManager = ObjectManager.Instance;
+        }
+
+        if (objectManager != null)
+        {
+            GameObject pooled = objectManager.MakeObj(type, position, rotation);
+            if (pooled != null)
+            {
+                return;
+            }
+        }
+
+        // 풀에서 못 가져오면 기존 방식으로 안전 폴백
+        GameObject fallbackPrefab = type == "largeBullet" ? largeBulletPrefab : smallBulletPrefab;
+        if (fallbackPrefab != null)
+        {
+            Instantiate(fallbackPrefab, position, rotation);
+        }
     }
 
     // ──────────────────────────────────────────────
@@ -249,6 +278,18 @@ public class PlayerControll : MonoBehaviour
         }
 
         skillBoomCount--;
+
+        if (objectManager == null)
+        {
+            objectManager = ObjectManager.Instance;
+        }
+
+        if (objectManager != null && objectManager.MakeObj("SkillBoom", Vector3.zero, Quaternion.identity) != null)
+        {
+            Debug.Log($"[스킬붐] 발동! 남은 수량: {skillBoomCount}/{maxItemCount}");
+            return;
+        }
+
         Instantiate(skillBoomPrefab, Vector3.zero, Quaternion.identity);
         Debug.Log($"[스킬붐] 발동! 남은 수량: {skillBoomCount}/{maxItemCount}");
     }
@@ -287,7 +328,19 @@ public class PlayerControll : MonoBehaviour
         else if (other.CompareTag("EnemyBullet"))
         {
             TakeDamage(1, other);
-            Destroy(other.gameObject);
+            if (objectManager == null)
+            {
+                objectManager = ObjectManager.Instance;
+            }
+
+            if (objectManager != null)
+            {
+                objectManager.ReturnObj(other.gameObject);
+            }
+            else
+            {
+                Destroy(other.gameObject);
+            }
         }
         else if (other.CompareTag("Item"))
         {
@@ -358,7 +411,19 @@ public class PlayerControll : MonoBehaviour
                 break;
         }
 
-        Destroy(itemCollider.gameObject);
+        if (objectManager == null)
+        {
+            objectManager = ObjectManager.Instance;
+        }
+
+        if (objectManager != null)
+        {
+            objectManager.ReturnObj(itemCollider.gameObject);
+        }
+        else
+        {
+            Destroy(itemCollider.gameObject);
+        }
     }
 
     // ──────────────────────────────────────────────

@@ -19,6 +19,7 @@ public class Item : MonoBehaviour
 {
     public string type;          // 아이템 종류 ("Coin" / "Power" / "Boom")
     private Rigidbody2D rigid;   // 물리 이동에 사용하는 Rigidbody2D 컴포넌트
+    private ObjectManager objectManager;
 
     // ──────────────────────────────────────────────────────────────
     // 초기화
@@ -29,6 +30,16 @@ public class Item : MonoBehaviour
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
+        objectManager = ObjectManager.Instance;
+    }
+
+    void OnEnable()
+    {
+        if (rigid == null)
+        {
+            rigid = GetComponent<Rigidbody2D>();
+        }
+
         rigid.linearVelocity = Vector2.down * 0.5f; // 생성 즉시 아래 방향 속도 적용
     }
 
@@ -46,7 +57,19 @@ public class Item : MonoBehaviour
         // 화면 아래로 완전히 벗어나면 삭제
         if (transform.position.y <= -7f)
         {
-            Destroy(gameObject);
+            if (objectManager == null)
+            {
+                objectManager = ObjectManager.Instance;
+            }
+
+            if (objectManager != null)
+            {
+                objectManager.ReturnObj(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

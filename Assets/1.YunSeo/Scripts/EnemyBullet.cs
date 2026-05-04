@@ -17,6 +17,7 @@ public class EnemyBullet : MonoBehaviour
 
     private Camera mainCamera;           // 메인 카메라 참조
     private Vector3 moveDirection = Vector3.down; // 발사 방향 (기본값: 아래)
+    private ObjectManager objectManager;
 
     // ──────────────────────────────────────────────────────────────
     // 초기화
@@ -28,6 +29,19 @@ public class EnemyBullet : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
+        objectManager = ObjectManager.Instance;
+
+        RetargetPlayer();
+    }
+
+    void OnEnable()
+    {
+        RetargetPlayer();
+    }
+
+    private void RetargetPlayer()
+    {
+        moveDirection = Vector3.down;
 
         // 플레이어를 찾아 발사 시점의 방향을 1회만 계산해 고정
         Transform target = FindPlayer();
@@ -51,7 +65,7 @@ public class EnemyBullet : MonoBehaviour
         {
             if (transform.position.y <= -8f)
             {
-                Destroy(gameObject);
+                ReturnSelf();
             }
 
             return;
@@ -63,7 +77,7 @@ public class EnemyBullet : MonoBehaviour
         // 화면 아래쪽 바깥으로 나가면 삭제
         if (viewportPosition.y < -viewportMargin)
         {
-            Destroy(gameObject);
+            ReturnSelf();
         }
     }
 
@@ -89,6 +103,30 @@ public class EnemyBullet : MonoBehaviour
             return player.transform;
         }
 
+        // 태그/이름이 바뀐 경우를 대비한 최종 fallback
+        PlayerControll playerController = FindFirstObjectByType<PlayerControll>();
+        if (playerController != null)
+        {
+            return playerController.transform;
+        }
+
         return null;
+    }
+
+    private void ReturnSelf()
+    {
+        if (objectManager == null)
+        {
+            objectManager = ObjectManager.Instance;
+        }
+
+        if (objectManager != null)
+        {
+            objectManager.ReturnObj(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }

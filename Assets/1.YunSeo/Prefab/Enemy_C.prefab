@@ -246,7 +246,7 @@ MonoBehaviour:
   fallSpeed: 1.5
   destroyY: -6
   moveDirection: {x: 0, y: -1}
-  enemyBulletPrefab: {fileID: 2275035247208973708, guid: 9b2e937876e18814eac0cf5cf9707f14, type: 3}
+  enemyBulletPrefab: {fileID: 3917879465162180011, guid: 24ecf1ab3b41c08439faa0a8da30ad84, type: 3}
   firstShotDelay: 1.2
   shotInterval: 4
   playerBulletDamage: 5

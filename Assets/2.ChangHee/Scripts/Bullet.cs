@@ -22,10 +22,12 @@ public class Bullet : MonoBehaviour
     public int damage = 1;
 
     private Camera mainCamera;
+    private ObjectManager objectManager;
 
     void Start()
     {
         mainCamera = Camera.main;
+        objectManager = ObjectManager.Instance;
     }
 
     void Update()
@@ -45,7 +47,7 @@ public class Bullet : MonoBehaviour
         {
             if (transform.position.y >= 8f)
             {
-                Destroy(gameObject);
+                ReturnSelf();
             }
 
             return;
@@ -55,7 +57,7 @@ public class Bullet : MonoBehaviour
 
         if (viewportPosition.y > 1f + viewportMargin)
         {
-            Destroy(gameObject);
+            ReturnSelf();
         }
     }
 
@@ -79,6 +81,23 @@ public class Bullet : MonoBehaviour
             //     enemy.TakeDamage(damage);
             // }
 
+            ReturnSelf();
+        }
+    }
+
+    private void ReturnSelf()
+    {
+        if (objectManager == null)
+        {
+            objectManager = ObjectManager.Instance;
+        }
+
+        if (objectManager != null)
+        {
+            objectManager.ReturnObj(gameObject);
+        }
+        else
+        {
             Destroy(gameObject);
         }
     }

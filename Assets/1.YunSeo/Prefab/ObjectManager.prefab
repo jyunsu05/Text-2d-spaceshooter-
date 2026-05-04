@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7100187260595309975
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8667443284616974623}
+  - component: {fileID: 8009673407039000257}
+  m_Layer: 0
+  m_Name: ObjectManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8667443284616974623
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7100187260595309975}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8009673407039000257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7100187260595309975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79b50fcba781a91419e41ed7c68fbdf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectManager
+  enemy_APrefab: {fileID: 6582011577875457899, guid: 242b244936bc87240860196e7f43f97e, type: 3}
+  enemy_BPrefab: {fileID: 2027619264219988834, guid: aa141e190b21785449d68619872511d8, type: 3}
+  enemy_CPrefab: {fileID: 4133347090381250563, guid: a7b9fe19157f5154f9f92cf9dc04ab3d, type: 3}
+  itemCoinPrefab: {fileID: 3105807404976320409, guid: 2975ba433a944544091efc8c60cce9f3, type: 3}
+  itemPowerPrefab: {fileID: 8601258764337822713, guid: 3f9af06397effeb4fb6959b4de076934, type: 3}
+  itemBoomPrefab: {fileID: 1473699978230664702, guid: dc6403be3273a1c419797b000d510a7d, type: 3}
+  skillBoomPrefab: {fileID: 1587367563823329999, guid: 32e115843553e284e9f095c1d79d6c7e, type: 3}
+  playerLargeBulletPrefab: {fileID: 2686513862860052424, guid: 6a12c0aac22544c4e8c6ce722fb3846d, type: 3}
+  playerSmallBulletPrefab: {fileID: 6206190152786135884, guid: b6bcc8783cbc14c23b41efc1e1efec4b, type: 3}
+  enemyBullet_0Prefab: {fileID: 2275035247208973708, guid: 9b2e937876e18814eac0cf5cf9707f14, type: 3}
+  enemyBullet_1Prefab: {fileID: 3917879465162180011, guid: 24ecf1ab3b41c08439faa0a8da30ad84, type: 3}

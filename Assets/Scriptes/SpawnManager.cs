@@ -19,9 +19,12 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private EnemySpawnEntry[] spawnEntries;
 
     private List<SpawnPoint> allPoints = new List<SpawnPoint>(); // 0~8 전체
+    private ObjectManager objectManager;
 
     void Start()
     {
+        objectManager = ObjectManager.Instance;
+
         // 씬에 있는 모든 SpawnPoint를 찾아서 리스트에 등록
         SpawnPoint[] found = FindObjectsByType<SpawnPoint>();
 
@@ -80,7 +83,16 @@ public class SpawnManager : MonoBehaviour
             rotation = Quaternion.Euler(0f, 0f, -45f);  // 왼쪽으로 45도 기울기
         }
 
-        GameObject spawnedEnemy = Instantiate(enemyPrefab, point.transform.position, rotation);
+        GameObject spawnedEnemy = null;
+        if (objectManager != null)
+        {
+            spawnedEnemy = objectManager.MakeObjByPrefab(enemyPrefab, point.transform.position, rotation);
+        }
+
+        if (spawnedEnemy == null)
+        {
+            spawnedEnemy = Instantiate(enemyPrefab, point.transform.position, rotation);
+        }
 
         Enemy enemy = spawnedEnemy.GetComponent<Enemy>();
         if (enemy == null) return;

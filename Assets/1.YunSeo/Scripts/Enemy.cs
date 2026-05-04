@@ -45,9 +45,11 @@ public class Enemy : MonoBehaviour
     private Transform enemyPoint2;          // Enemy_C 총알 발사 위치 2
     private bool canShoot;                  // 총알 발사 가능 여부 (Enemy_C만 true)
     private Coroutine hitFeedbackRoutine;   // 피격 연출 코루틴 참조 (중복 실행 방지용)
+    private Coroutine shootRoutine;         // Enemy_C 발사 코루틴 참조
     private Sprite normalSprite;            // 평상시 스프라이트
     private Sprite hitSprite;               // 피격 시 스프라이트
     private bool isDead = false;            // 사망 중복 처리 방지 플래그
+    private ObjectManager objectManager;
 
     // ──────────────────────────────────────────────
     // 초기화
@@ -55,8 +57,7 @@ public class Enemy : MonoBehaviour
 
     void Awake()
     {
-        // HP 초기화
-        currentHp = maxHp;
+        objectManager = ObjectManager.Instance;
 
         // SpriteRenderer 자동 캐싱
         if (spriteRenderer == null)
@@ -77,15 +78,58 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void OnEnable()
     {
+        currentHp = maxHp;
+        isDead = false;
+        if (hitFeedbackRoutine != null)
+        {
+            StopCoroutine(hitFeedbackRoutine);
+            hitFeedbackRoutine = null;
+        }
+
+        if (normalSprite != null && spriteRenderer != null)
+        {
+            spriteRenderer.sprite = normalSprite;
+            spriteRenderer.color = Color.white;
+        }
+
+        if (objectManager == null)
+        {
+            objectManager = ObjectManager.Instance;
+        }
+
         // Enemy_C가 아니거나 필요한 참조가 없으면 발사 루프 시작 안 함
         if (!canShoot || enemyBulletPrefab == null || enemyPoint1 == null || enemyPoint2 == null)
         {
             return;
         }
 
-        StartCoroutine(ShootLoop());
+        shootRoutine = StartCoroutine(ShootLoop());
+    }
+
+    private void OnDisable()
+    {
+        if (shootRoutine != null)
+        {
+            StopCoroutine(shootRoutine);
+            shootRoutine = null;
+        }
+
+        if (hitFeedbackRoutine != null)
+        {
+            StopCoroutine(hitFeedbackRoutine);
+            hitFeedbackRoutine = null;
+        }
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = Color.white;
+            if (normalSprite != null)
+            {
+                spriteRenderer.sprite = normalSprite;
+            }
+        }
     }
 
     // ──────────────────────────────────────────────
@@ -101,7 +145,7 @@ public class Enemy : MonoBehaviour
         // 화면 아래로 벗어나면 삭제
         if (transform.position.y <= destroyY)
         {
-            Destroy(gameObject);
+            ReturnSelf();
         }
     }
 
@@ -175,7 +219,20 @@ public class Enemy : MonoBehaviour
         int previousHp = currentHp;
         Hit(appliedDamage);
         Debug.Log($"({previousHp} / {maxHp}) = 플레이어 총알 : {other.gameObject.name}");
-        Destroy(other.gameObject);
+
+        if (objectManager == null)
+        {
+            objectManager = ObjectManager.Instance;
+        }
+
+        if (objectManager != null)
+        {
+            objectManager.ReturnObj(other.gameObject);
+        }
+        else
+        {
+            Destroy(other.gameObject);
+        }
     }
 
     // ──────────────────────────────────────────────
@@ -270,7 +327,7 @@ public class Enemy : MonoBehaviour
         }
 
         DropItem();
-        Destroy(gameObject);
+        ReturnSelf();
     }
 
     // ──────────────────────────────────────────────
@@ -307,6 +364,16 @@ public class Enemy : MonoBehaviour
 
         if (prefab != null)
         {
+            if (objectManager == null)
+            {
+                objectManager = ObjectManager.Instance;
+            }
+
+            if (objectManager != null && objectManager.MakeObjByPrefab(prefab, transform.position, Quaternion.identity) != null)
+            {
+                return;
+            }
+
             Instantiate(prefab, transform.position, Quaternion.identity);
         }
     }
@@ -349,6 +416,16 @@ public class Enemy : MonoBehaviour
             return;
         }
 
+        if (objectManager == null)
+        {
+            objectManager = ObjectManager.Instance;
+        }
+
+        if (objectManager != null && objectManager.MakeObjByPrefab(enemyBulletPrefab, firePoint.position, firePoint.rotation) != null)
+        {
+            return;
+        }
+
         Instantiate(enemyBulletPrefab, firePoint.position, firePoint.rotation);
     }
 
@@ -365,5 +442,22 @@ public class Enemy : MonoBehaviour
         return viewportPos.z > 0f
                && viewportPos.x >= 0f && viewportPos.x <= 1f
                && viewportPos.y >= 0f && viewportPos.y <= 1f;
+    }
+
+    private void ReturnSelf()
+    {
+        if (objectManager == null)
+        {
+            objectManager = ObjectManager.Instance;
+        }
+
+        if (objectManager != null)
+        {
+            objectManager.ReturnObj(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }

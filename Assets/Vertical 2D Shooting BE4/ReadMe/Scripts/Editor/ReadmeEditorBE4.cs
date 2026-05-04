@@ -36,10 +36,21 @@ public class ReadmeEditorBE4 : Editor {
 	
 	static void LoadLayout()
 	{
+		var layoutPath = Path.Combine(Application.dataPath, "TutorialInfo/Layout.wlt");
+		if (!File.Exists(layoutPath))
+		{
+			return;
+		}
+
 		var assembly = typeof(EditorApplication).Assembly; 
 		var windowLayoutType = assembly.GetType("UnityEditor.WindowLayout", true);
 		var method = windowLayoutType.GetMethod("LoadWindowLayout", BindingFlags.Public | BindingFlags.Static);
-		method.Invoke(null, new object[]{Path.Combine(Application.dataPath, "TutorialInfo/Layout.wlt"), false});
+		if (method == null)
+		{
+			return;
+		}
+
+		method.Invoke(null, new object[]{layoutPath, false});
 	}
 	
 	static ReadmeBE4 SelectReadme() 
@@ -48,9 +59,14 @@ public class ReadmeEditorBE4 : Editor {
 		if (ids.Length == 1)
 		{
 			var readmeObject = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GUIDToAssetPath(ids[0]));
-			
-			Selection.objects = new UnityEngine.Object[]{readmeObject};
-			
+			if (readmeObject == null)
+			{
+				Debug.LogWarning("Readme asset was found by GUID but failed to load.");
+				return null;
+			}
+
+			Selection.activeObject = readmeObject;
+
 			return (ReadmeBE4)readmeObject;
 		}
 		else
