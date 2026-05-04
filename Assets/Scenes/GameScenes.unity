@@ -758,6 +758,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: stageFile
+      value: 
+      objectReference: {fileID: 4900000, guid: b2f7a90835bc2ce488f14fc2f4238ffc, type: 3}
+    - target: {fileID: 1410211206752950826, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
       propertyPath: spawnEntries.Array.size
       value: 3
       objectReference: {fileID: 0}
