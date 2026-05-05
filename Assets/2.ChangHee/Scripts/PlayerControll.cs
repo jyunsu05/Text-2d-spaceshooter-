@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// 플레이어 이동, 발사, 화면 범위 제한, 파워업을 담당하는 컨트롤러
@@ -342,8 +343,9 @@ public class PlayerControll : MonoBehaviour
 
     void Move()
     {
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveY = Input.GetAxisRaw("Vertical");
+        Vector2 moveInput = ReadMoveInput();
+        float moveX = moveInput.x;
+        float moveY = moveInput.y;
 
         Vector2 direction = new Vector2(moveX, moveY).normalized;
         transform.Translate(direction * speed * Time.deltaTime);
@@ -365,18 +367,61 @@ public class PlayerControll : MonoBehaviour
         // GameOver 상태에서 플레이어가 계속 발사되는 문제를 막습니다.
         if (currentHp <= 0) return;
 
+        bool isFireHeld = IsFireHeld();
+        bool isSkillPressed = IsSkillPressedThisFrame();
+
         // 마우스 왼쪽: 일반 총알 연사
-        if (!isInvincible && Input.GetMouseButton(0) && Time.time >= nextShotTime)
+        if (!isInvincible && isFireHeld && Time.time >= nextShotTime)
         {
             Shoot();
             nextShotTime = Time.time + shotInterval;
         }
 
         // 마우스 우클릭: 스킬붐 발동
-        if (!isInvincible && Input.GetMouseButtonDown(1))
+        if (!isInvincible && isSkillPressed)
         {
             UseSkillBoom();
         }
+    }
+
+    private Vector2 ReadMoveInput()
+    {
+        Vector2 move = Vector2.zero;
+
+        if (Keyboard.current != null)
+        {
+            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) move.x -= 1f;
+            if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) move.x += 1f;
+            if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) move.y -= 1f;
+            if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) move.y += 1f;
+        }
+
+        if (Gamepad.current != null)
+        {
+            Vector2 stick = Gamepad.current.leftStick.ReadValue();
+            if (stick.sqrMagnitude > move.sqrMagnitude)
+            {
+                move = stick;
+            }
+        }
+
+        return Vector2.ClampMagnitude(move, 1f);
+    }
+
+    private bool IsFireHeld()
+    {
+        bool mouseFire = Mouse.current != null && Mouse.current.leftButton.isPressed;
+        bool keyboardFire = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
+        bool gamepadFire = Gamepad.current != null && Gamepad.current.buttonSouth.isPressed;
+        return mouseFire || keyboardFire || gamepadFire;
+    }
+
+    private bool IsSkillPressedThisFrame()
+    {
+        bool mouseSkill = Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame;
+        bool keyboardSkill = Keyboard.current != null && Keyboard.current.leftShiftKey.wasPressedThisFrame;
+        bool gamepadSkill = Gamepad.current != null && Gamepad.current.rightShoulder.wasPressedThisFrame;
+        return mouseSkill || keyboardSkill || gamepadSkill;
     }
 
     // ──────────────────────────────────────────────

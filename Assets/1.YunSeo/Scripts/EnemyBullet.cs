@@ -104,7 +104,7 @@ public class EnemyBullet : MonoBehaviour
         }
 
         // 태그/이름이 바뀐 경우를 대비한 최종 fallback
-        PlayerControll playerController = FindFirstObjectByType<PlayerControll>();
+        PlayerControll playerController = FindAnyObjectByType<PlayerControll>();
         if (playerController != null)
         {
             return playerController.transform;
