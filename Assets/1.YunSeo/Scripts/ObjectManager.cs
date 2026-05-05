@@ -16,6 +16,7 @@ public class ObjectManager : MonoBehaviour
     public GameObject playerSmallBulletPrefab;
     public GameObject enemyBullet_0Prefab;
     public GameObject enemyBullet_1Prefab;
+    public GameObject bossPrefab;            // 보스 프리팹
     
     GameObject[] enemy_A;
     GameObject[] enemy_B;
@@ -29,6 +30,7 @@ public class ObjectManager : MonoBehaviour
     GameObject[] playerSmallBullet;
     GameObject[] enemyBullet_0;
     GameObject[] enemyBullet_1;
+    GameObject[] boss;                   // 보스 풀 (1개)
     GameObject[] skillBoom;
     
     private readonly HashSet<GameObject> pooledObjects = new HashSet<GameObject>();
@@ -57,6 +59,7 @@ public class ObjectManager : MonoBehaviour
         playerSmallBullet = new GameObject[100];
         enemyBullet_0 = new GameObject[100];
         enemyBullet_1 =  new GameObject[100];
+        boss = new GameObject[1];            // 보스는 동시에 1개만 존재
         skillBoom = new GameObject[5];
         
         Generate();
@@ -79,6 +82,7 @@ public class ObjectManager : MonoBehaviour
         FillPool(playerSmallBullet, playerSmallBulletPrefab);
         FillPool(enemyBullet_0, enemyBullet_0Prefab);
         FillPool(enemyBullet_1, enemyBullet_1Prefab);
+        FillPool(boss, bossPrefab);
 
         //4.Skill
         FillPool(skillBoom, skillBoomPrefab);
@@ -114,6 +118,7 @@ public class ObjectManager : MonoBehaviour
             case "smallBullet":  return playerSmallBullet;
             case "EnemyBullet_0": return enemyBullet_0;
             case "EnemyBullet_1": return enemyBullet_1;
+            case "Boss":         return boss;
             case "SkillBoom":    return skillBoom;
             default:             return null;
         }
@@ -198,6 +203,7 @@ public class ObjectManager : MonoBehaviour
         if (prefab == playerSmallBulletPrefab) return "smallBullet";
         if (prefab == enemyBullet_0Prefab) return "EnemyBullet_0";
         if (prefab == enemyBullet_1Prefab) return "EnemyBullet_1";
+        if (prefab == bossPrefab) return "Boss";
         if (prefab == skillBoomPrefab) return "SkillBoom";
 
         // 인스펙터에서 다른 인스턴스가 연결돼도 이름으로 최대한 매칭
@@ -212,6 +218,7 @@ public class ObjectManager : MonoBehaviour
         if (prefabName.Contains("smallBullet")) return "smallBullet";
         if (prefabName.Contains("EnemyBullet_0")) return "EnemyBullet_0";
         if (prefabName.Contains("EnemyBullet_1")) return "EnemyBullet_1";
+        if (prefabName.Contains("Boss")) return "Boss";
         if (prefabName.Contains("SkillBoom")) return "SkillBoom";
 
         return null;

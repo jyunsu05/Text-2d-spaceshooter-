@@ -100,7 +100,7 @@ public class SpawnManager : MonoBehaviour
                 continue;
             }
 
-            // 적 타입 파싱 (A/B/C → Enemy_A/Enemy_B/Enemy_C)
+            // 적 타입 파싱 (A/B/C/Boss → Enemy_A/Enemy_B/Enemy_C/Boss)
             string typeChar = parts[1].Trim().ToUpper();
             string enemyType;
             switch (typeChar)
@@ -108,12 +108,13 @@ public class SpawnManager : MonoBehaviour
                 case "A": enemyType = "Enemy_A"; break;
                 case "B": enemyType = "Enemy_B"; break;
                 case "C": enemyType = "Enemy_C"; break;
+                case "BOSS": enemyType = "Boss"; break;
                 default:
                     Debug.LogWarning($"[SpawnManager] 알 수 없는 적 타입: '{typeChar}'");
                     continue;
             }
 
-            // 스폰포인트 인덱스 파싱
+            // 스폰포인트 인덱스 파싱 (Boss 타입은 포인트 인덱스 무시해도 됨)
             if (!int.TryParse(parts[2].Trim(), out int pointIndex))
             {
                 Debug.LogWarning($"[SpawnManager] 스폰포인트 인덱스 파싱 실패: '{parts[2].Trim()}'");
@@ -124,7 +125,46 @@ public class SpawnManager : MonoBehaviour
             if (delay > 0f)
                 yield return new WaitForSeconds(delay);
 
-            SpawnEnemyByType(enemyType, pointIndex);
+            // 보스는 별도 소환 로직 사용
+            if (enemyType == "Boss")
+                SpawnBoss();
+            else
+                SpawnEnemyByType(enemyType, pointIndex);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // 보스 소환 — 화면 상단 중앙에 1개만 소환
+    // ──────────────────────────────────────────────────────────────
+    private void SpawnBoss()
+    {
+        if (objectManager == null) return;
+
+        // 이미 활성 보스가 있으면 중복 소환 방지
+        GameObject[] bossPool = objectManager.GetPool("Boss");
+        if (bossPool != null)
+        {
+            foreach (GameObject b in bossPool)
+            {
+                if (b != null && b.activeSelf)
+                {
+                    Debug.Log("[SpawnManager] 보스가 이미 활성화 중입니다.");
+                    return;
+                }
+            }
+        }
+
+        // 화면 상단 중앙 좌표 계산
+        Camera cam = Camera.main;
+        Vector3 spawnPos = cam != null
+            ? cam.ViewportToWorldPoint(new Vector3(0.5f, 1.2f, cam.nearClipPlane))
+            : new Vector3(0f, 6f, 0f);
+        spawnPos.z = 0f;
+
+        GameObject boss = objectManager.MakeObj("Boss", spawnPos, Quaternion.identity);
+        if (boss == null)
+        {
+            Debug.LogWarning("[SpawnManager] ObjectManager Boss 풀에서 오브젝트를 가져오지 못했습니다. bossPrefab이 연결됐는지 확인하세요.");
         }
     }
 

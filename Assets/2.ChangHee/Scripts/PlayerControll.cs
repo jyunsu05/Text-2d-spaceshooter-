@@ -436,7 +436,7 @@ public class PlayerControll : MonoBehaviour
     // - 로그 형식: (현재 체력 / 최대 체력) = 충돌 개체 : 개체 이름
     // ──────────────────────────────────────────────
 
-    void TakeDamage(int damage, Collider2D collision)
+    public void TakeDamage(int damage, Collider2D collision)
     {
         if (currentHp <= 0)
         {

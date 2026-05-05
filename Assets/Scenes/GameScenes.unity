@@ -564,6 +564,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ObjectManager
       objectReference: {fileID: 0}
+    - target: {fileID: 8009673407039000257, guid: 755ed94760609ff4cb5ce529642a3cfc, type: 3}
+      propertyPath: bossPrefab
+      value: 
+      objectReference: {fileID: 6925865343712399013, guid: 4aa361cf654907846a3d9871ddbc9b1a, type: 3}
     - target: {fileID: 8667443284616974623, guid: 755ed94760609ff4cb5ce529642a3cfc, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -816,6 +820,10 @@ PrefabInstance:
     - target: {fileID: 2424055870687606448, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
       propertyPath: m_Name
       value: SpawnManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 2424055870687606448, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6042478610634261479, guid: 5315b6b055e2ba544ac8bd629399d557, type: 3}
       propertyPath: m_LocalPosition.x
