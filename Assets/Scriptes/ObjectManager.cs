@@ -14,6 +14,8 @@ public class ObjectManager : MonoBehaviour
     public GameObject skillBoomPrefab;
     public GameObject playerLargeBulletPrefab;
     public GameObject playerSmallBulletPrefab;
+    public GameObject followerPrefab;
+    public GameObject followerBulletPrefab;
     public GameObject enemyBullet_0Prefab;
     public GameObject enemyBullet_1Prefab;
     public GameObject bossPrefab;            // 보스 프리팹
@@ -28,6 +30,8 @@ public class ObjectManager : MonoBehaviour
     
     GameObject[] playerLargeBullet;
     GameObject[] playerSmallBullet;
+    GameObject[] followers;
+    GameObject[] followerBullet;
     GameObject[] enemyBullet_0;
     GameObject[] enemyBullet_1;
     GameObject[] boss;                   // 보스 풀 (1개)
@@ -57,6 +61,8 @@ public class ObjectManager : MonoBehaviour
         
         playerLargeBullet = new GameObject[100];
         playerSmallBullet = new GameObject[100];
+        followers = new GameObject[3];
+        followerBullet = new GameObject[100];
         enemyBullet_0 = new GameObject[100];
         enemyBullet_1 =  new GameObject[100];
         boss = new GameObject[1];            // 보스는 동시에 1개만 존재
@@ -80,11 +86,15 @@ public class ObjectManager : MonoBehaviour
         //3.Bullet
         FillPool(playerLargeBullet, playerLargeBulletPrefab);
         FillPool(playerSmallBullet, playerSmallBulletPrefab);
+        FillPool(followerBullet, followerBulletPrefab);
         FillPool(enemyBullet_0, enemyBullet_0Prefab);
         FillPool(enemyBullet_1, enemyBullet_1Prefab);
         FillPool(boss, bossPrefab);
 
-        //4.Skill
+        //4.Follower
+        FillPool(followers, followerPrefab);
+
+        //5.Skill
         FillPool(skillBoom, skillBoomPrefab);
     }
 
@@ -116,6 +126,9 @@ public class ObjectManager : MonoBehaviour
             case "ItemBoom":     return itemBoom;
             case "largeBullet":  return playerLargeBullet;
             case "smallBullet":  return playerSmallBullet;
+            case "Follower":     return followers;
+            case "Follow Bullet": return followerBullet;
+            case "FollowerBullet": return followerBullet;
             case "EnemyBullet_0": return enemyBullet_0;
             case "EnemyBullet_1": return enemyBullet_1;
             case "Boss":         return boss;
@@ -201,6 +214,8 @@ public class ObjectManager : MonoBehaviour
         if (prefab == itemBoomPrefab) return "ItemBoom";
         if (prefab == playerLargeBulletPrefab) return "largeBullet";
         if (prefab == playerSmallBulletPrefab) return "smallBullet";
+        if (prefab == followerPrefab) return "Follower";
+        if (prefab == followerBulletPrefab) return "Follow Bullet";
         if (prefab == enemyBullet_0Prefab) return "EnemyBullet_0";
         if (prefab == enemyBullet_1Prefab) return "EnemyBullet_1";
         if (prefab == bossPrefab) return "Boss";
@@ -216,6 +231,8 @@ public class ObjectManager : MonoBehaviour
         if (prefabName.Contains("ItemBoom")) return "ItemBoom";
         if (prefabName.Contains("largeBullet")) return "largeBullet";
         if (prefabName.Contains("smallBullet")) return "smallBullet";
+        if (prefabName.Contains("Follower Bullet") || prefabName.Contains("Follow Bullet")) return "Follow Bullet";
+        if (prefabName.Contains("Follower")) return "Follower";
         if (prefabName.Contains("EnemyBullet_0")) return "EnemyBullet_0";
         if (prefabName.Contains("EnemyBullet_1")) return "EnemyBullet_1";
         if (prefabName.Contains("Boss")) return "Boss";

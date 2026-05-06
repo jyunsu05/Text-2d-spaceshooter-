@@ -53,5 +53,8 @@ MonoBehaviour:
   skillBoomPrefab: {fileID: 1587367563823329999, guid: 32e115843553e284e9f095c1d79d6c7e, type: 3}
   playerLargeBulletPrefab: {fileID: 2686513862860052424, guid: 6a12c0aac22544c4e8c6ce722fb3846d, type: 3}
   playerSmallBulletPrefab: {fileID: 6206190152786135884, guid: b6bcc8783cbc14c23b41efc1e1efec4b, type: 3}
+  followerPrefab: {fileID: 920000001, guid: 7c88d2a7da9f64c25ad196a0d777b32e, type: 3}
+  followerBulletPrefab: {fileID: 6207831204149384858, guid: e8a159a66260b4c1588e50941c7bdef3, type: 3}
   enemyBullet_0Prefab: {fileID: 2275035247208973708, guid: 9b2e937876e18814eac0cf5cf9707f14, type: 3}
   enemyBullet_1Prefab: {fileID: 3917879465162180011, guid: 24ecf1ab3b41c08439faa0a8da30ad84, type: 3}
+  bossPrefab: {fileID: 0}

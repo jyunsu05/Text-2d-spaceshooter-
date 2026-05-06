@@ -76,16 +76,16 @@ public class PlayerControll : MonoBehaviour
 
     [Tooltip("이 파워 단계 이상일 때 쫄다구도 함께 총알을 발사")]
     // 예: 2로 두면 bulletPower가 2 이상일 때부터 쫄다구도 발사합니다.
-    public int followerShootRequiredPower = 2;
+    public int followerShootRequiredPower = 3;
 
-    [Tooltip("쫄다구 총알의 겉모습으로 사용할 오브젝트입니다. Follow Bullet을 여기에 연결하세요. 실제 이동/삭제 기능은 smallBulletPrefab을 사용합니다.")]
+    [Tooltip("쫄다구가 발사할 Follow Bullet 프리팹입니다. ObjectManager에도 같은 프리팹을 연결합니다.")]
     public GameObject followerBulletPrefab;
 
     [Tooltip("쫄다구 총알 속도를 따로 조절할지 여부")]
     public bool useFollowerBulletSpeed = true;
 
     [Tooltip("쫄다구 총알 속도입니다. 총알 스크립트 안에 speed 필드/프로퍼티가 있으면 이 값으로 덮어씁니다.")]
-    public float followerBulletSpeed = 8f;
+    public float followerBulletSpeed = 12f;
 
     [Tooltip("쫄다구가 1개만 활성화되었을 때, 플레이어가 몇 발 쏠 때마다 쫄다구가 1발 쏠지 정합니다.")]
     public int followerShotIntervalWhenOneFollower = 5;
@@ -95,12 +95,6 @@ public class PlayerControll : MonoBehaviour
 
     [Tooltip("쫄다구가 3개 활성화되었을 때 발사 간격")]
     public int followerShotIntervalWhenThreeFollowers = 2;
-
-    [Tooltip("쫄다구 점사 횟수 (한 번에 몇 발을 연속으로 쏠지)")]
-    public int followerBurstCount = 3;
-
-    [Tooltip("점사 내부 총알 간 간격 (초)")]
-    public float followerBurstInterval = 0.06f;
 
     [Header("HP 설정")]
     [Tooltip("플레이어 최대 HP")]
@@ -139,6 +133,7 @@ public class PlayerControll : MonoBehaviour
     private int currentHp;
     private bool isInvincible;
     private Coroutine invincibleRoutine;
+    private bool followerBulletPoolWarningShown;
 
     // 현재 활성화된 쫄다구 개수입니다.
     // 시작 시에는 0입니다.
@@ -170,6 +165,7 @@ public class PlayerControll : MonoBehaviour
 
         animator = GetComponent<Animator>();
 
+        AssignFollowersFromObjectManager();
         AutoAssignFollowersIfNeeded();
         AutoAssignFollowerTargets();
         DetachFollowersFromPlayer();
@@ -185,6 +181,37 @@ public class PlayerControll : MonoBehaviour
                     followers[i].gameObject.SetActive(false);
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// ObjectManager가 쫄다구 풀을 가지고 있으면 그 3마리를 Player가 사용하도록 연결합니다.
+    /// </summary>
+    void AssignFollowersFromObjectManager()
+    {
+        if (objectManager == null)
+        {
+            objectManager = ObjectManager.Instance;
+        }
+
+        if (objectManager == null)
+        {
+            return;
+        }
+
+        GameObject[] pooledFollowers = objectManager.GetPool("Follower");
+        if (pooledFollowers == null || pooledFollowers.Length == 0)
+        {
+            return;
+        }
+
+        followers = new Transform[pooledFollowers.Length];
+        for (int i = 0; i < pooledFollowers.Length; i++)
+        {
+            if (pooledFollowers[i] == null) continue;
+
+            pooledFollowers[i].name = $"Follower_{i}";
+            followers[i] = pooledFollowers[i].transform;
         }
     }
 
@@ -314,7 +341,7 @@ public class PlayerControll : MonoBehaviour
             if (followerTransform == null) continue;
 
             Follower follower = followerTransform.GetComponent<Follower>();
-            if (follower != null && follower.target == null)
+            if (follower != null)
             {
                 follower.target = previousTarget;
             }
@@ -495,15 +522,15 @@ public class PlayerControll : MonoBehaviour
         // 아직 쫄다구가 쏠 차례가 아니면 종료합니다.
         if (followerShotCounter < shotInterval) return;
 
-        // 쏠 차례가 되었으므로 카운터를 초기화하고 쫄다구 총알을 발사합니다.
+        // 쏠 차례가 되었으므로 카운터를 초기화하고 쫄다구 총알을 1번만 발사합니다.
         followerShotCounter = 0;
-        StartCoroutine(ShootFollowersBurst());
+        ShootFollowers();
     }
 
     /// <summary>
     /// 실제로 쫄다구 총알을 생성한다.
     /// 이 함수는 매번 호출되는 것이 아니라 TryShootFollowersByInterval()에서 정해진 발사 간격이 되었을 때만 호출된다.
-    /// 쫄다구 총알은 smallBulletPrefab으로 만들고, followerBulletPrefab의 Sprite만 복사해서 겉모습을 바꿉니다.
+    /// 쫄다구 총알은 ObjectManager의 Follow Bullet 풀에서 가져옵니다.
     /// </summary>
     void ShootFollowers()
     {
@@ -523,17 +550,36 @@ public class PlayerControll : MonoBehaviour
             // 아직 비활성화된 쫄다구는 총알을 발사하지 않습니다.
             if (!follower.gameObject.activeInHierarchy) continue;
 
-            // 실제 총알은 기존 smallBulletPrefab으로 생성합니다.
-            // 이렇게 해야 smallBulletPrefab에 들어 있는 이동/삭제/충돌 로직을 그대로 사용할 수 있습니다.
-            GameObject followerBullet = Instantiate(smallBulletPrefab, follower.position, firePoint.rotation);
-
-            // 겉모습만 Follow Bullet 오브젝트의 Sprite로 바꿉니다.
-            // 즉, 총알 기능은 smallBulletPrefab / 총알 그림은 followerBulletPrefab 구조입니다.
-            ApplyFollowerBulletVisual(followerBullet);
+            GameObject followerBullet = SpawnFollowerBullet(follower.position, firePoint.rotation);
 
             // 필요하면 쫄다구 총알 속도를 Inspector 값으로 덮어씁니다.
             ApplyFollowerBulletSpeed(followerBullet);
         }
+    }
+
+    GameObject SpawnFollowerBullet(Vector3 position, Quaternion rotation)
+    {
+        if (objectManager == null)
+        {
+            objectManager = ObjectManager.Instance;
+        }
+
+        if (objectManager != null)
+        {
+            GameObject pooled = objectManager.MakeObj("Follow Bullet", position, rotation);
+            if (pooled != null)
+            {
+                return pooled;
+            }
+        }
+
+        if (!followerBulletPoolWarningShown)
+        {
+            followerBulletPoolWarningShown = true;
+            Debug.LogWarning("[쫄다구 총알] ObjectManager에서 Follow Bullet 풀을 가져오지 못했습니다. 풀 설정/개수를 확인하세요.");
+        }
+
+        return null;
     }
 
 
@@ -569,6 +615,11 @@ public class PlayerControll : MonoBehaviour
 
         Debug.Log($"[쫄다구] Follower {activeFollowerCount} 활성화: {follower.name}");
         activeFollowerCount++;
+    }
+
+    int GetFollowerCapacity()
+    {
+        return followers == null ? 0 : followers.Length;
     }
 
     /// <summary>
@@ -608,28 +659,6 @@ public class PlayerControll : MonoBehaviour
         }
 
         return null;
-    }
-
-    /// <summary>
-    /// 쫄다구 총알의 겉모습만 Follow Bullet 오브젝트처럼 바꾸는 함수입니다.
-    /// followerBulletPrefab 자체를 발사하지 않습니다.
-    /// 이유: Follow Bullet 오브젝트에는 총알 이동/삭제 스크립트가 없을 수 있기 때문입니다.
-    /// 실제 총알 기능은 smallBulletPrefab을 사용하고, 여기서는 SpriteRenderer의 sprite만 복사합니다.
-    /// </summary>
-    void ApplyFollowerBulletVisual(GameObject bullet)
-    {
-        if (bullet == null) return;
-        if (followerBulletPrefab == null) return;
-
-        SpriteRenderer sourceRenderer = followerBulletPrefab.GetComponent<SpriteRenderer>();
-        SpriteRenderer targetRenderer = bullet.GetComponent<SpriteRenderer>();
-
-        if (sourceRenderer == null || targetRenderer == null) return;
-
-        targetRenderer.sprite = sourceRenderer.sprite;
-        targetRenderer.color = sourceRenderer.color;
-        targetRenderer.flipX = sourceRenderer.flipX;
-        targetRenderer.flipY = sourceRenderer.flipY;
     }
 
     /// <summary>
@@ -805,10 +834,6 @@ public class PlayerControll : MonoBehaviour
                     powerCount++;
                 }
 
-                // Power 아이템을 먹을 때마다 쫄다구를 1개씩 활성화합니다.
-                // bulletPower가 이미 최대여도 쫄다구는 최대 3개까지 순서대로 켜질 수 있습니다.
-                ActivateNextFollower();
-
                 if (bulletPower < 3)
                 {
                     PowerUp();
@@ -816,7 +841,9 @@ public class PlayerControll : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log($"[아이템] Power 획득 | +{powerScore}점 | power가 최대입니다 ({bulletPower}/3) | Power 카운트: {powerCount}/{maxItemCount} | 총점: {score}");
+                    // 플레이어 총알 파워가 이미 3일 때 Power 아이템을 먹으면 쫄다구를 하나씩 활성화합니다.
+                    ActivateNextFollower();
+                    Debug.Log($"[아이템] Power 획득 | +{powerScore}점 | power가 최대입니다 ({bulletPower}/3) | 쫄다구: {activeFollowerCount}/{GetFollowerCapacity()} | 총점: {score}");
                 }
                 break;
 
@@ -928,23 +955,4 @@ public class PlayerControll : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 쫄다구 점사(따다닥) 발사 코루틴
-    /// 한 번 발사 타이밍이 오면 여러 발을 짧은 간격으로 연속 발사한다.
-    /// </summary>
-    IEnumerator ShootFollowersBurst()
-    {
-        int count = Mathf.Max(1, followerBurstCount);
-
-        for (int i = 0; i < count; i++)
-        {
-            ShootFollowers();
-
-            // 마지막 발 이후에는 대기하지 않음
-            if (i < count - 1)
-            {
-                yield return new WaitForSeconds(followerBurstInterval);
-            }
-        }
-    }
 }
